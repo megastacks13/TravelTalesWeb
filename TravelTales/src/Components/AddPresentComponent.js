@@ -1,5 +1,5 @@
 import { useState,useEffect } from "react";
-import { backendUrl } from "../Globals";
+import { backendUrl } from "../../../frontend/src/Globals";
 import { useNavigate } from "react-router-dom";
 
 let AnadirViajeComponent = ( props)=>{

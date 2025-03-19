@@ -1,6 +1,6 @@
 import './App.css';
 import {Routes,Route,Link, useNavigate} from 'react-router-dom'
-import AnadirViajeComponent from './Components/AnadirViajeComponent';
+import AnadirViajeComponent from '../../TravelTales/src/Components/AnadirViajeComponent';
 
 import { useEffect, useState } from 'react';
 
