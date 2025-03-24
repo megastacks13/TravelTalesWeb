@@ -1,12 +1,12 @@
-const express = require('express')
-const cors = require("cors")
+import express from 'express'
+import cors from 'cors'
+import routerUsers from './routers/routerUsers.js'
+import routerViajes from './routers/routerViajes.js'
+
 const port = 4006
 let app = express()
 app.use(cors())
 app.use(express.json())
-
-const routerViajes = require("./routers/routerViajes") 
-const routerUsers = require("./routers/routerUsers") 
 
 app.use("/viajes",routerViajes)
 app.use("/users",routerUsers)

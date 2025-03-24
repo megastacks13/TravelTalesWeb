@@ -1,14 +1,15 @@
-const express = require ("express")
+import express from 'express'
 let routerUsers = express.Router()
-const jwt = require("jsonwebtoken")
-let {db, usersRef} = require("../database")
-let activeApiKeys = require("../activeApiKeys")
+import jwt from 'jsonwebtoken'
+import database from "../database.js";
+import activeApiKeys from '../activeApiKeys.js'
+const { db, usersRef } = database;
 
 
 routerUsers.post("/", async (req, res) => {
     const { email, name, password } = req.body;
     let errors = [];
-
+    if (!db) errors.push('db undefined')
     if (!email) errors.push("no email");
     if (!name) errors.push("no name");
     if (!password) errors.push("no password");
@@ -25,7 +26,7 @@ routerUsers.post("/", async (req, res) => {
         await newUserRef.set({ email, name, password });
 
         res.json({ insertedUser: { id: newUserRef.key, email, name } });
-    } catch (error) {
+    } catch {
         res.status(400).json({ error: "problem inserting the user" });
     }
 });
@@ -57,7 +58,7 @@ routerUsers.post("/login", async (req, res) => {
         activeApiKeys.push(apiKey);
 
         res.json({ apiKey, id: user.id, email: user.email });
-    } catch (error) {
+    } catch {
         res.status(400).json({ error: "error in login" });
     }
 });
@@ -74,4 +75,4 @@ routerUsers.post("/disconnect", (req, res) => {
 });
 
 
-module.exports=routerUsers
+export default routerUsers;

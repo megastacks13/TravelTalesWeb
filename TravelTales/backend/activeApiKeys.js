@@ -1,3 +1,3 @@
 let activeApiKeys = []
 
-module.exports=activeApiKeys
+export default activeApiKeys
