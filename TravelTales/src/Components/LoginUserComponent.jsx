@@ -41,7 +41,7 @@ let LoginUserComponent = (props) =>{
             }
             setMessage("Logged in")
             setLogin(true)
-            navigate("/myPresents")
+            navigate("/viajes")
         }else{
             let jsonData = await response.json()
             let errors=""
