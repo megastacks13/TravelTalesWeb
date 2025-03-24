@@ -1,8 +1,9 @@
 const express = require ("express")
 let routerUsers = express.Router()
 const jwt = require("jsonwebtoken")
-let db = require("../database")
+let {db, usersRef} = require("../database")
 let activeApiKeys = require("../activeApiKeys")
+
 
 routerUsers.post("/", async (req, res) => {
     const { email, name, password } = req.body;
@@ -15,7 +16,6 @@ routerUsers.post("/", async (req, res) => {
     if (errors.length > 0) return res.status(400).json({ errors });
 
     try {
-        const usersRef = db.ref("users");
         const snapshot = await usersRef.orderByChild("email").equalTo(email).once("value");
         if (snapshot.exists()) {
             return res.status(400).json({ error: "already user with that email" });
@@ -39,7 +39,6 @@ routerUsers.post("/login", async (req, res) => {
     if (errors.length > 0) return res.status(400).json({ errors });
 
     try {
-        const usersRef = db.ref("users");
         const snapshot = await usersRef.orderByChild("email").equalTo(email).once("value");
         if (!snapshot.exists()) {
             return res.status(401).json({ error: "invalid email or password" });

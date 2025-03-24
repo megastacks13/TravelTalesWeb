@@ -1,8 +1,9 @@
 import './App.css';
 import {Routes,Route,Link, useNavigate} from 'react-router-dom'
-import AnadirViajeComponent from '../../TravelTales/src/Components/AnadirViajeComponent';
-
+import ViajesComponent from './Components/ViajesComponent';
 import { useEffect, useState } from 'react';
+import LoginUserComponent from './Components/LoginUserComponent';
+import RegisterUserComponent from './Components/RegisterUserComponent'
 
 function App() {
 
@@ -23,22 +24,40 @@ function App() {
   },
   [])
 
+  let checkIfLogin = () =>{
+    if(localStorage.getItem("apiKey")!=null){
+      setLogin(true)
+    }else{
+      setLogin(false)
+    }
+  }
+
+  let disconnect = () =>{
+    localStorage.removeItem("apiKey")
+    setLogin(false)
+    navigate("/login")
+  }
 
   return (
     <div className="App">
       <nav>
         <ul>
-          {<li><Link to="/anadirViaje">Añadir Viaje</Link></li>}
+          {!login && <li><Link to="/register">Register</Link></li>}
+          {!login &&<li><Link to="/login" >Log In</Link></li>}
+          {login && <li><Link to="/viajes">Viajes</Link></li>}
+          {login &&<li><Link to="#" onClick={disconnect}>Disconnect</Link></li>}
         </ul>
       </nav>
-      {notification!="" && (
+      {notification!=="" && (
         <div className='notification'>      {notification}
           <span className='close-btn' onClick={()=>{setNotification("")}}>X</span>
         </div>
       )}
       <h1>My gifts</h1>
       <Routes>
-        <Route path="/anadirViaje" element={<AnadirViajeComponent createNotification={createNotification}/>}></Route>
+        <Route path="/register" element={<RegisterUserComponent/>}></Route>
+        <Route path="/login" element={<LoginUserComponent setLogin={setLogin}/>}></Route>
+        <Route path="/viajes" element={<ViajesComponent createNotification={createNotification}/>}></Route>
       </Routes>
     </div>
   );

@@ -2,7 +2,7 @@ import { useState,useEffect } from "react";
 import { backendUrl } from "../Globals";
 import { useNavigate } from "react-router-dom";
 
-let AnadirViajeComponent = ( props)=>{
+let ViajesComponent = ( props)=>{
     let [present,setPresent] = useState({})
     let [message,setMessage] = useState("")
     let [error,setError]=useState({})
@@ -68,4 +68,4 @@ let AnadirViajeComponent = ( props)=>{
     </div>)
 }
 
-export default AddPresentComponent;
+export default ViajesComponent;

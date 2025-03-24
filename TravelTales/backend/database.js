@@ -1,11 +1,12 @@
 const admin = require("firebase-admin");
 
-const serviceAccount = require("./credenciales.json");
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
-
-const db = admin.firestore();
-
-module.exports = db;
+    credential: admin.credential.cert(require("./credenciales.json")), 
+    databaseURL: "https://traveltales-1653b-default-rtdb.europe-west1.firebasedatabase.app"
+  });
+  
+const db = admin.database();
+const usersRef = db.ref("users"); 
+  
+module.exports = { db, usersRef };
