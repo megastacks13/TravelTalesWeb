@@ -38,6 +38,7 @@ let MenuPrincipalComponent = (props) =>{
 
   return (
     <div>
+      
       {notification!=="" && (
         <div className='notification'>      {notification}
           <span className='close-btn' onClick={()=>{setNotification("")}}>X</span>
@@ -45,9 +46,10 @@ let MenuPrincipalComponent = (props) =>{
       )}
       <h1 className='titulo-pagina-principal'>Travel Tales</h1>
       <nav className='nav-pagina-principal'>
-        {!login && <button onClick={() => navigate("/register")} type="button" class="btn btn-primary" className = 'botones-pagina-principal'>Registrarse</button>}
-        {!login && <button onClick={() => navigate("/login")} type="button" class="btn btn-primary" className = 'botones-pagina-principal'>Iniciar Sesión</button>}
+        {!login && <button onClick={() => navigate("/register")} type="button" class="btn btn-primary botones-pagina-principal">Registrarse</button>}
+        {!login && <button onClick={() => navigate("/login")} type="button" class="btn btn-primary botones-pagina-principal">Iniciar Sesión</button>}
       </nav>
+      
     </div>
   );
 }

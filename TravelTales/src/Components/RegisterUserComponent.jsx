@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {backendUrl} from "../Globals"
 import { useNavigate } from "react-router-dom";
+import '../PaginaRegistro.css';
 
 let RegisterUserComponent = () =>{
     let [nombre,setNombre] =useState(null)
@@ -62,7 +63,8 @@ let RegisterUserComponent = () =>{
 
     return (
         <div class='card'>
-            <div class='card-body'>
+            <h1 className='titulo-pagina-registro'>Travel Tales</h1>
+            <div class='card-body' className='carta-registro'>
                 <h2 class='card-title'>Registrarse</h2>
                 <h3>{mensaje}</h3>
                 <form>
@@ -97,6 +99,7 @@ let RegisterUserComponent = () =>{
                     </div>
                     
                     <button class='btn btn-primary' onClick={registerUser}>Crear Cuenta</button>
+                    
                 </form>
             </div>
         </div>
