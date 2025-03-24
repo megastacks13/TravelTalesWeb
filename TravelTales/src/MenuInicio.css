@@ -3,30 +3,30 @@ body{
     background: rgb(207,242,207);
     background: linear-gradient(90deg, rgba(207,242,207,1) 11%, rgba(170,191,242,1) 95%);
 }
-.nav-pagina-principal{
+.nav-pagina-inicio{
     display: flex;
     width: 100%;
     justify-content: space-around;
     padding-top: 64px;
 }
 
-.titulo-pagina-principal{
-    padding-top: 10%;
+.titulo-pagina-inicio{
+    padding: 10% 0 5%;
     font-size: 64px;
 }
 
-.botones-pagina-principal{
+button.botones-pagina-inicio{
     width: 200px;
     height: 80px;
     text-align: center;
 
     font-size: 24px;
-    padding: 10px 20px;
+
+    padding: 10px 20px; 
 
     border-radius: 10px;
     border: solid black;
     cursor: pointer;
     position: relative;
     box-shadow: 4px 4px 0px rgba(0, 0, 0, 1); /* Solid black shadow bottom-left */
-
 }

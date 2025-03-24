@@ -4,8 +4,12 @@
     border: solid black 3px;
     border-radius: 8px;
 
+
 }
 
-.titulo-pagina-registro{
-    font-size: 48px;
+div.card-body{
+    background-color: transparent;
+}
+h1.card-header {
+
 }

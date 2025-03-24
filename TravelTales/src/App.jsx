@@ -5,7 +5,7 @@ import ViajesComponent from './Components/ViajesComponent';
 import { useEffect, useState } from 'react';
 import LoginUserComponent from './Components/LoginUserComponent';
 import RegisterUserComponent from './Components/RegisterUserComponent'
-import MenuPrincipalComponent from './Components/MenuPrincipalComponent';
+import MenuInicioComponent from './Components/MenuInicioComponent';
 
 function App() {
 
@@ -43,12 +43,13 @@ function App() {
     
     <div className="App">
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"></link>
-      <nav className='navbar'>
-        {login && <button onClick={() => navigate("/viajes")} type="button" class="btn btn-primary" className = 'botones-pagina-principal'>Viajes</button>}
-        {login && <button onClick={disconnect} type="button" class="btn btn-primary" className = 'botones-pagina-principal'>Cerrar Sesión</button>}
+      {login && <nav className='navbar'>
+        {login && <button onClick={() => navigate("/viajes")} type="button" class="btn btn-primary">Viajes</button>}
+        {login && <button onClick={disconnect} type="button" class="btn btn-primary">Cerrar Sesión</button>}
       </nav>
+      }
       <Routes>
-        <Route path="/" element={<MenuPrincipalComponent/>}></Route>
+        <Route path="/" element={<MenuInicioComponent/>}></Route>
         <Route path="/register" element={<RegisterUserComponent/>}></Route>
         <Route path="/login" element={<LoginUserComponent setLogin={setLogin}/>}></Route>
         <Route path="/viajes" element={<ViajesComponent createNotification={createNotification}/>}></Route>

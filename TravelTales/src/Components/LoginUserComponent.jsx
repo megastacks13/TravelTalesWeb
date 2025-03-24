@@ -66,7 +66,6 @@ let LoginUserComponent = (props) =>{
                 {error.password && <p>{error.password}</p>}
             </div>
             <button onClick={loginUser}>Enter</button>
-            <button type="button" class="btn btn-primary">Primary</button>
         </div>
     )
 }

@@ -62,9 +62,10 @@ let RegisterUserComponent = () =>{
     }
 
     return (
-        <div class='card'>
-            <h1 className='titulo-pagina-registro'>Travel Tales</h1>
-            <div class='card-body' className='carta-registro'>
+        <div class='card bg-transparent'>
+            <h1 class="card-header">Travel Tales</h1>
+ 
+            <div class='card-body bg-white  carta-registro'>
                 <h2 class='card-title'>Registrarse</h2>
                 <h3>{mensaje}</h3>
                 <form>
