@@ -99,8 +99,10 @@ let RegisterUserComponent = () =>{
                         {error.coincidir && <p class='text-danger'>{error.coincidir}</p>}
                     </div>
                     
-                    <button class='btn btn-primary' onClick={registerUser}>Crear Cuenta</button>
-                    
+                    <div className='d-flex justify-content-between mt-3'> 
+                        <button class='btn btn-sm btn-secondary me-2' type='button' onCLick={() => window.history.back()}>Volver Atrás</button>
+                        <button class='btn btn-sm btn-primary' onClick={registerUser}>Crear Cuenta</button>
+                    </div>
                 </form>
             </div>
         </div>
