@@ -47,8 +47,6 @@ let MenuPrincipalComponent = (props) =>{
       <nav className='nav-pagina-principal'>
         {!login && <button onClick={() => navigate("/register")} type="button" class="btn btn-primary" className = 'botones-pagina-principal'>Registrarse</button>}
         {!login && <button onClick={() => navigate("/login")} type="button" class="btn btn-primary" className = 'botones-pagina-principal'>Iniciar Sesión</button>}
-        {login && <button onClick={() => navigate("/viajes")} type="button" class="btn btn-primary" className = 'botones-pagina-principal'>Viajes</button>}
-        {login && <button onClick={disconnect} type="button" class="btn btn-primary" className = 'botones-pagina-principal'>Cerrar Sesión</button>}
       </nav>
     </div>
   );

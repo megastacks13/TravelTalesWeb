@@ -40,6 +40,10 @@ function App() {
 
   return (
     <div className="App">
+      <nav className='navbar'>
+        {login && <button onClick={() => navigate("/viajes")} type="button" class="btn btn-primary" className = 'botones-pagina-principal'>Viajes</button>}
+        {login && <button onClick={disconnect} type="button" class="btn btn-primary" className = 'botones-pagina-principal'>Cerrar Sesión</button>}
+      </nav>
       <Routes>
         <Route path="/" element={<MenuPrincipalComponent/>}></Route>
         <Route path="/register" element={<RegisterUserComponent/>}></Route>
