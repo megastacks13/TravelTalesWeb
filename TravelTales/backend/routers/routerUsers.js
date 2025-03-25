@@ -6,7 +6,7 @@ import activeApiKeys from '../activeApiKeys.js'
 const { db, usersRef } = database;
 
 
-routerUsers.post("/", async (req, res) => {
+routerUsers.post("/register", async (req, res) => {
     const { email, name, password } = req.body;
     let errors = [];
     if (!db) errors.push('db undefined')

@@ -35,7 +35,7 @@ let RegisterUserComponent = () =>{
     }
     let registerUser = async() =>{
         //añadir logica para que si errores, no deje hacer la peticion
-        let response = await fetch(backendUrl+"/users",
+        let response = await fetch(backendUrl+"/users/register",
         {method: "POST",
             headers: {"Content-Type":"application/json"},
             body: JSON.stringify({
