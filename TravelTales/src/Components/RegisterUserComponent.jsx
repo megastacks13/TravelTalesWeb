@@ -26,46 +26,47 @@ let RegisterUserComponent = (props) =>{
             errores.apellidos= "El campo 'apellidos' debe tener un valor"
         if(email == "" )
             errores.email= "El campo 'email' debe tener un valor"
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+        if (email!=null && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
             errores.email_format = "El campo 'email' no tiene un formato válido" 
         if(contrasena == "" )
             errores.contrasena= "El campo 'contraseña' debe tener un valor"
-        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(contrasena))
+        if (contrasena != null && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(contrasena))
             errores.contrasena_format = "El campo 'contraseña' debe cumplir con las siguientes características:\n\tAl menos 8 caracteres\n\tAl menos una mayúscula y una minúscula\n\tAl menos un número y un carácter especial"
         if(contrasena2 == "" )
             errores.contrasena2= "El campo 'repetir contraseña' debe tener un valor"
-        if(contrasena2!==contrasena )
+        if(contrasena!=null&&contrasena2!=null&&contrasena2!==contrasena )
             errores.coincicir= "Las dos contraseñas deben coindicir"
         setError(errores)
     }
-    let registerUser = async() =>{
-        if(error!={}){
+    let registerUser = async(event) =>{
+        event.preventDefault();
+        if (Object.keys(error).length > 0){
             createNotification("No debe haber errores para poder registrarse")
-            return
-        }
-        let response = await fetch(backendUrl+"/users/register", 
-        {method: "POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify({
-                nombre:nombre,
-                apellidos:apellidos,
-                email:email,
-                contrasena:contrasena
-            }) 
-        })
-        if(response.ok){
-            navigate("/login")
         }else{
-            let jsonData = await response.json()
-            let errores=""
-            if(jsonData.errors!=null){
-                jsonData.errors.array.forEach(e => {
-                    errores+=e+" "
-                });
-                setMensaje(errores)
-            }else
-                setMensaje(jsonData.error)
-            
+            let response = await fetch(backendUrl+"/users/register", 
+            {method: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    nombre:nombre,
+                    apellidos:apellidos,
+                    email:email,
+                    contrasena:contrasena
+                }) 
+            })
+            if(response.ok){
+                navigate("/login")
+            }else{
+                let jsonData = await response.json()
+                let errores=""
+                if(jsonData.errors!=null){
+                    jsonData.errors.array.forEach(e => {
+                        errores+=e+" "
+                    });
+                    setMensaje(errores)
+                }else
+                    setMensaje(jsonData.error)
+                
+            }
         }
     }
 
@@ -92,12 +93,14 @@ let RegisterUserComponent = (props) =>{
                         <label for="correo" class='form-label'>CORREO</label>
                         <input id='correo' class='form-control' type='text' placeholder='correo@correo.com' onChange={(e)=>setEmail(e.currentTarget.value)}/>
                         {error.email && <p class='text-danger'>{error.email}</p>}
+                        {error.email_format && <p class='text-danger'>{error.email_format}</p>}
                     </div>
                     
                     <div class='mb-3'>
                         <label for="contrasena" class='form-label'>CONTRASEÑA</label>
                         <input id='contrasena' class='form-control' type='password' onChange={(e)=>setContrasena(e.currentTarget.value)}/>
                         {error.contrasena && <p class='text-danger'>{error.contrasena}</p>}
+                        {error.contrasena_format && <p class='text-danger'>{error.contrasena_format}</p>}
                     </div>
                     
                     <div class='mb-3'>
