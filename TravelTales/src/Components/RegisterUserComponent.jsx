@@ -100,7 +100,7 @@ let RegisterUserComponent = () =>{
                     </div>
                     
                     <div className='d-flex justify-content-between mt-3'> 
-                        <button class='btn btn-sm btn-secondary me-2' type='button' onCLick={() => window.history.back()}>Volver Atrás</button>
+                        <button class='btn btn-sm btn-secondary me-2' type='button' onClick={() => window.history.back()}>Volver Atrás</button>
                         <button class='btn btn-sm btn-primary' onClick={registerUser}>Crear Cuenta</button>
                     </div>
                 </form>
