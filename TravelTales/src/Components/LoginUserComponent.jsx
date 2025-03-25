@@ -6,11 +6,12 @@ let LoginUserComponent = (props) =>{
     let [password,setPassword] =useState(null)
     let [email,setEmail] =useState(null)
 
-    let [message,setMessage]=useState("")
+    let [mensaje,setMessage]=useState("")
     let [error,setError]=useState({})
 
     let {setLogin}=props
     let navigate = useNavigate()
+
     useEffect(()=>{
         checkData();
     },[password,email])
@@ -39,7 +40,7 @@ let LoginUserComponent = (props) =>{
                 localStorage.setItem("userId",jsonData.id)
                 localStorage.setItem("email",jsonData.email)
             }
-            setMessage("Logged in")
+            setMessage("Logged in") //Esto no iria dentro del otro IF?
             setLogin(true)
             navigate("/viajes")
         }else{
@@ -56,16 +57,30 @@ let LoginUserComponent = (props) =>{
     }
 
     return (
-        <div>
-            <h2>Log In</h2>
-            <h3>{message}</h3>
-            <div>
-                <input type='text' placeholder='email' onChange={(e)=>setEmail(e.currentTarget.value)}/>
-                {error.email && <p>{error.email}</p>}
-                <input type='text' placeholder='password' onChange={(e)=>setPassword(e.currentTarget.value)}/>
-                {error.password && <p>{error.password}</p>}
+        <div class='card bg-transparent'>
+            <h1 class="card-header">Travel Tales</h1>
+            <div class='card-body bg-white  carta-registro'>
+                <h2 class='card-title'>Iniciar Sesión</h2>
+                {<h3>{mensaje}</h3>}
+                <form>
+                    <div class='mb-3'>
+                        <label for="correo" class='form-label'>CORREO</label>
+                        <input id='correo' class='form-control' type='text' placeholder='correo@correo.com' onChange={(e)=>setEmail(e.currentTarget.value)}/>
+                        {error.email && <p class='text-danger'>{error.email}</p>}
+                    </div>
+                    
+                    <div class='mb-3'>
+                        <label for="contrasena" class='form-label'>CONTRASEÑA</label>
+                        <input id='contrasena' class='form-control' type='password' onChange={(e)=>setPassword(e.currentTarget.value)}/>
+                        {error.contrasena && <p class='text-danger'>{error.contrasena}</p>}
+                    </div>
+                    
+                    <div className='d-flex justify-content-between mt-3'> 
+                        <button class='btn btn-sm btn-secondary me-2' type='button' onClick={() => window.history.back()}>Volver Atrás</button>
+                        <button class='btn btn-sm btn-primary' onClick={loginUser}>Iniciar Sesión</button>
+                    </div>
+                </form>
             </div>
-            <button onClick={loginUser}>Enter</button>
         </div>
     )
 }
