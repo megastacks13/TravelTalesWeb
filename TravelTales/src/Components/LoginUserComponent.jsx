@@ -3,7 +3,7 @@ import {backendUrl} from "../Globals"
 import { useNavigate } from "react-router-dom";
 
 let LoginUserComponent = (props) =>{
-    let [password,setPassword] =useState(null)
+    let [contrasena,setContrasena] =useState(null)
     let [email,setEmail] =useState(null)
 
     let [mensaje,setMessage]=useState("")
@@ -14,14 +14,14 @@ let LoginUserComponent = (props) =>{
 
     useEffect(()=>{
         checkData();
-    },[password,email])
+    },[contrasena,email])
 
     let checkData = () =>{
         let newErrors = {}
-        if( password == "" )
-            newErrors.password= "Password must have a value"
+        if( contrasena == "" )
+            newErrors.password= "La contraseña debe tener un valor"
         if(email == "" )
-            newErrors.email= "Email must have a value"
+            newErrors.email= "El email debe tener un valor"
         setError(newErrors)
     }
     let loginUser = async() =>{
@@ -30,7 +30,7 @@ let LoginUserComponent = (props) =>{
             headers: {"Content-Type":"application/json"},
             body: JSON.stringify({
                 email:email,
-                password:password
+                contrasena:contrasena
             }) 
         })
         if(response.ok){
@@ -71,7 +71,7 @@ let LoginUserComponent = (props) =>{
                     
                     <div class='mb-3'>
                         <label for="contrasena" class='form-label'>CONTRASEÑA</label>
-                        <input id='contrasena' class='form-control' type='password' onChange={(e)=>setPassword(e.currentTarget.value)}/>
+                        <input id='contrasena' class='form-control' type='password' onChange={(e)=>setContrasena(e.currentTarget.value)}/>
                         {error.contrasena && <p class='text-danger'>{error.contrasena}</p>}
                     </div>
                     

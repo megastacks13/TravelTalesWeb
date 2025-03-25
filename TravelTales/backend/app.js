@@ -11,6 +11,6 @@ app.use(express.json())
 app.use("/viajes",routerViajes)
 app.use("/users",routerUsers)
 
-app.listen(port, ()=>{
+app.listen(port, () => {
     console.log("Listening in port "+port)
 })

@@ -7,36 +7,36 @@ const { db, usersRef } = database;
 
 
 routerUsers.post("/register", async (req, res) => {
-    const { email, name, password } = req.body;
+    const { nombre, apellidos, email, contrasena } = req.body;
     let errors = [];
     if (!db) errors.push('db undefined')
-    if (!email) errors.push("no email");
-    if (!name) errors.push("no name");
-    if (!password) errors.push("no password");
-    if (password && password.length < 5) errors.push("password shorter than 5");
+    if (!email) errors.push("No se ha recibido un email");
+    if (!nombre) errors.push("No se ha recibido un nombre");
+    if (!apellidos) errors.push("No se han recibido unos apellidos");
+    if (!contrasena) errors.push("No se ha recibido una contraseña");
     if (errors.length > 0) return res.status(400).json({ errors });
 
     try {
         const snapshot = await usersRef.orderByChild("email").equalTo(email).once("value");
         if (snapshot.exists()) {
-            return res.status(400).json({ error: "already user with that email" });
+            return res.status(400).json({ error: "Ya existe un usuario asignado al email introducido" });
         }
 
         const newUserRef = usersRef.push();
-        await newUserRef.set({ email, name, password });
+        await newUserRef.set({ email, nombre, contrasena });
 
-        res.json({ insertedUser: { id: newUserRef.key, email, name } });
+        res.json({ insertedUser: { id: newUserRef.key, email, nombre } });
     } catch {
-        res.status(400).json({ error: "problem inserting the user" });
+        res.status(400).json({ error: "Ha habido un error insertando el usuario" });
     }
 });
 
 routerUsers.post("/login", async (req, res) => {
-    const { email, password } = req.body;
+    const { email, contrasena } = req.body;
     let errors = [];
 
-    if (!email) errors.push("no email");
-    if (!password) errors.push("no password");
+    if (!email) errors.push("No se ha recibido un email");
+    if (!contrasena) errors.push("no password");
     if (errors.length > 0) return res.status(400).json({ errors });
 
     try {
@@ -47,7 +47,7 @@ routerUsers.post("/login", async (req, res) => {
 
         let user = null;
         snapshot.forEach(childSnapshot => {
-            if (childSnapshot.val().password === password) {
+            if (childSnapshot.val().password === contrasena) {
                 user = { id: childSnapshot.key, ...childSnapshot.val() };
             }
         });

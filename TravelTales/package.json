@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "backend": "node ./backend/app.js",
-    "whole": "vite & node ./backend/app.js",
+    "whole": "concurrently \"vite\" \"node ./backend/app.js\"",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
@@ -30,6 +30,7 @@
     "@types/supertest": "^6.0.3",
     "@vitejs/plugin-react": "^4.3.4",
     "babel-jest": "^29.7.0",
+    "concurrently": "^9.1.2",
     "eslint": "^9.21.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
@@ -38,11 +39,16 @@
     "supertest": "7.1.0",
     "vite": "^6.2.0"
   },
- "jest": {
-  "transform": {
-    "^.+\\.js$": "babel-jest"
-  },
-  "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json"]
-}
-
+  "jest": {
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
+  }
 }

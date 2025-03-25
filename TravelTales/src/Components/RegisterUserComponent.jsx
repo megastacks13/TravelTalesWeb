@@ -3,13 +3,14 @@ import {backendUrl} from "../Globals"
 import { useNavigate } from "react-router-dom";
 import '../PaginaRegistro.css';
 
-let RegisterUserComponent = () =>{
+let RegisterUserComponent = (props) =>{
     let [nombre,setNombre] =useState(null)
     let [apellidos,setApellidos] =useState(null)
     let [email,setEmail] =useState(null)
     let [contrasena,setContrasena] =useState(null)
     let [contrasena2,setContrasena2] =useState(null)
-    
+    let {createNotification}=props
+
     let [mensaje,setMensaje]=useState("")
     let [error,setError]=useState({})
     let navigate = useNavigate()
@@ -25,17 +26,24 @@ let RegisterUserComponent = () =>{
             errores.apellidos= "El campo 'apellidos' debe tener un valor"
         if(email == "" )
             errores.email= "El campo 'email' debe tener un valor"
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+            errores.email_format = "El campo 'email' no tiene un formato válido" 
         if(contrasena == "" )
             errores.contrasena= "El campo 'contraseña' debe tener un valor"
+        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(contrasena))
+            errores.contrasena_format = "El campo 'contraseña' debe cumplir con las siguientes características:\n\tAl menos 8 caracteres\n\tAl menos una mayúscula y una minúscula\n\tAl menos un número y un carácter especial"
         if(contrasena2 == "" )
             errores.contrasena2= "El campo 'repetir contraseña' debe tener un valor"
-        if(contrasena!==contrasena )
+        if(contrasena2!==contrasena )
             errores.coincicir= "Las dos contraseñas deben coindicir"
         setError(errores)
     }
     let registerUser = async() =>{
-        //añadir logica para que si errores, no deje hacer la peticion
-        let response = await fetch(backendUrl+"/users/register",
+        if(error!={}){
+            createNotification("No debe haber errores para poder registrarse")
+            return
+        }
+        let response = await fetch(backendUrl+"/users/register", 
         {method: "POST",
             headers: {"Content-Type":"application/json"},
             body: JSON.stringify({

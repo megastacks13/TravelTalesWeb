@@ -48,9 +48,14 @@ function App() {
         {login && <button onClick={disconnect} type="button" class="btn btn-primary">Cerrar Sesión</button>}
       </nav>
       }
+      {notification!="" && (
+        <div className='notification'>      {notification}
+          <span className='close-btn' onClick={()=>{setNotification("")}}>X</span>
+        </div>
+      )}
       <Routes>
         <Route path="/" element={<MenuInicioComponent/>}></Route>
-        <Route path="/register" element={<RegisterUserComponent/>}></Route>
+        <Route path="/register" element={<RegisterUserComponent createNotification={createNotification}/>}></Route>
         <Route path="/login" element={<LoginUserComponent setLogin={setLogin}/>}></Route>
         <Route path="/viajes" element={<ViajesComponent createNotification={createNotification}/>}></Route>
       </Routes>
