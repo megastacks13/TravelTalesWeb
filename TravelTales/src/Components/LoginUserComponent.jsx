@@ -1,6 +1,7 @@
 import { useState,useEffect } from "react";
 import {backendUrl} from "../Globals"
 import { useNavigate } from "react-router-dom";
+import FormField from "./FormFieldComponent";
 
 let LoginUserComponent = (props) =>{
     let [contrasena,setContrasena] =useState(null)
@@ -63,17 +64,8 @@ let LoginUserComponent = (props) =>{
                 <h2 class='card-title'>Iniciar Sesión</h2>
                 {<h3>{mensaje}</h3>}
                 <form>
-                    <div class='mb-3'>
-                        <label for="correo" class='form-label'>CORREO</label>
-                        <input id='correo' class='form-control' type='text' placeholder='correo@correo.com' onChange={(e)=>setEmail(e.currentTarget.value)}/>
-                        {error.email && <p class='text-danger'>{error.email}</p>}
-                    </div>
-                    
-                    <div class='mb-3'>
-                        <label for="contrasena" class='form-label'>CONTRASEÑA</label>
-                        <input id='contrasena' class='form-control' type='password' onChange={(e)=>setContrasena(e.currentTarget.value)}/>
-                        {error.contrasena && <p class='text-danger'>{error.contrasena}</p>}
-                    </div>
+                    <FormField id="correo" label="CORREO" placeholder="correo@correo.com" value={email} onChange={(e) => setEmail(e.currentTarget.value)} errors={[error.email, error.email_format].filter(Boolean)} />
+                    <FormField id="contrasena" label="CONTRASEÑA" type="password" value={contrasena} onChange={(e) => setContrasena(e.currentTarget.value)} errors={[error.contrasena, error.contrasena_format].filter(Boolean)} />
                     
                     <div className='d-flex justify-content-between mt-3'> 
                         <button class='btn btn-sm btn-secondary me-2' type='button' onClick={() => window.history.back()}>Volver Atrás</button>

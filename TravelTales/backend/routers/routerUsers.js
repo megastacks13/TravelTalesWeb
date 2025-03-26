@@ -36,7 +36,7 @@ routerUsers.post("/login", async (req, res) => {
     let errors = [];
 
     if (!email) errors.push("No se ha recibido un email");
-    if (!contrasena) errors.push("no password");
+    if (!contrasena) errors.push("No se ha recibido contraseña");
     if (errors.length > 0) return res.status(400).json({ errors });
 
     try {
