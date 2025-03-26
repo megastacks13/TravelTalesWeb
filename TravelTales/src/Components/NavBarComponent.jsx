@@ -5,6 +5,9 @@ import FormField from "./FormFieldComponent.jsx";
 import '../NavBar.css';
 
 let NavBarComponent = (props) =>{
+
+
+    
     return (
         <div>
             <div class="container">
@@ -23,7 +26,7 @@ let NavBarComponent = (props) =>{
                             <a class="nav-link" href="/register">Buscar Viajes</a>
                         </li>
                         <li class="nav-item ml-auto">
-                            <a class="nav-link" href="/register">Cerrar sesión</a>
+                            <a class="nav-link" href="/">Cerrar sesión</a> 
                         </li>
                     </ul>
                     
