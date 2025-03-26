@@ -2,7 +2,6 @@ import { useState,useEffect } from "react";
 import {backendUrl} from "../Globals"
 import { useNavigate } from "react-router-dom";
 import FormField from "./FormFieldComponent";
-import FormField from "./FormFieldComponent";
 
 let LoginUserComponent = (props) =>{
     let [contrasena,setContrasena] =useState(null)
