@@ -31,8 +31,18 @@ let RegisterUserComponent = (props) =>{
             errores.email_format = "El campo 'email' no tiene un formato válido" 
         if(contrasena == "" )
             errores.contrasena= "El campo 'contraseña' debe tener un valor"
-        if (contrasena != null && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(contrasena))
-            errores.contrasena_format = "El campo 'contraseña' debe cumplir con las siguientes características:\n\tAl menos 8 caracteres\n\tAl menos una mayúscula y una minúscula\n\tAl menos un número y un carácter especial"
+        else if (contrasena != null)
+            errores.contrasena_format = ""
+            if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(contrasena))
+                errores.contrasena_format = "El campo 'contraseña' debe cumplir con las siguientes características:"
+            if (!/^(?=.*[a-z])(?=.*[A-Z])/.test(contrasena))
+                errores.contrasena_format += "\n\tAl menos una mayúscula y una minúscula"
+            if (!/(?=.*\d)/.test(contrasena))
+                errores.contrasena_format += "\n\tAl menos un número"
+            if (!/(?=.*[\W_])/.test(contrasena))
+                errores.contrasena_format += "\n\tAl menos un caracter especial"
+            if (!/.{8,}$/.test(contrasena))    
+                errores.contrasena_format += "\n\tAl menos 8 caracteres"
         if(contrasena2 == "" )
             errores.contrasena2= "El campo 'repetir contraseña' debe tener un valor"
         if(contrasena!=null&&contrasena2!=null&&contrasena2!==contrasena )
