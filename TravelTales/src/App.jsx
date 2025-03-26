@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import LoginUserComponent from './Components/LoginUserComponent';
 import RegisterUserComponent from './Components/RegisterUserComponent'
 import MenuInicioComponent from './Components/MenuInicioComponent';
+import NavBarComponent from './Components/NavBarComponent.jsx';
 
 function App() {
 
@@ -43,11 +44,8 @@ function App() {
     
     <div className="App">
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"></link>
-      {login && <nav className='navbar'>
-        {login && <button onClick={() => navigate("/viajes")} type="button" class="btn btn-primary">Viajes</button>}
-        {login && <button onClick={disconnect} type="button" class="btn btn-primary">Cerrar Sesión</button>}
-      </nav>
-      }
+      <NavBarComponent />
+  
       {notification!="" && (
         <div className='notification'>      {notification}
           <span className='close-btn' onClick={()=>{setNotification("")}}>X</span>

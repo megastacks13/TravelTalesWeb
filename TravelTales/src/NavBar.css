@@ -1,0 +1,10 @@
+
+
+a.navbar-brand{
+    padding-left: 32px;
+    transition: transform 0.5s;
+}
+
+a.navbar-brand:hover{
+    transform: scale(1.1);
+}

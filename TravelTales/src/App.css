@@ -21,17 +21,7 @@ h1, h2, h3 {
 
 /** Nuevo navbar **/
 
-.navbar {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: #000000;
-}
 
-.navbar li {
-  float: left;
-}
 
 .navbar li a {
   display: block;
@@ -41,9 +31,6 @@ h1, h2, h3 {
   text-decoration: none;
 }
 
-.navbar li a:hover {
-  background-color: #3500f7;
-}
 
 .center-box {
   max-width: 400px;
