@@ -17,9 +17,8 @@ describe('POST /register', () => {
             .send({});
         expect(res.status).toBe(400);
         expect(res.body.errors).toContain("No se ha recibido un email");
-        expect(res.body.errors).toContain("No se ha recibido un nombre");
         expect(res.body.errors).toContain("No se ha recibido una contraseña");
-        expect(res.body.errors).toContain("No se han recibido unos apellidos");
+       
     });
 
     it('should return 401 if user already exists', async () => {

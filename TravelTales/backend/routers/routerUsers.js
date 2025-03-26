@@ -1,5 +1,5 @@
 import express from 'express'
-let routerUsers = express.Router()
+const routerUsers = express.Router()
 import jwt from 'jsonwebtoken'
 import database from "../database.js";
 import activeApiKeys from '../activeApiKeys.js'
@@ -34,15 +34,14 @@ routerUsers.post("/register", async (req, res) => {
 routerUsers.post("/login", async (req, res) => {
     const { email, contrasena } = req.body;
     let errors = [];
-
     if (!email) errors.push("No se ha recibido un email");
-    if (!contrasena) errors.push("No se ha recibido contraseña");
+    if (!contrasena) errors.push("No se ha recibido una contraseña");
     if (errors.length > 0) return res.status(400).json({ errors });
 
     try {
         const snapshot = await usersRef.orderByChild("email").equalTo(email).once("value");
         if (!snapshot.exists()) {
-            return res.status(401).json({ error: "invalid email" });
+            return res.status(401).json({ error: "Correo no válido" });
         }
 
         let user = null;
@@ -52,13 +51,13 @@ routerUsers.post("/login", async (req, res) => {
             }
         });
 
-        if (!user) return res.status(401).json({ error: "invalid password" });
+        if (!user) return res.status(402).json({ error: "Contraseña incorrecta" });
 
         const apiKey = jwt.sign({ email: user.email, id: user.id, time: Date.now() }, "secret");
         activeApiKeys.push(apiKey);
 
         res.json({ apiKey, id: user.id, email: user.email });
-    } catch {
+    } catch{
         res.status(400).json({ error: "error in login" });
     }
 });
