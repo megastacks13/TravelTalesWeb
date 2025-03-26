@@ -36,7 +36,7 @@ let RegisterUserComponent = (props) =>{
         if(contrasena2 == "" )
             errores.contrasena2= "El campo 'repetir contraseña' debe tener un valor"
         if(contrasena!=null&&contrasena2!=null&&contrasena2!==contrasena )
-            errores.coincicir= "Las dos contraseñas deben coindicir"
+            errores.coincidir= "Las dos contraseñas deben coindicir"
         setError(errores)
     }
     let registerUser = async(event) =>{

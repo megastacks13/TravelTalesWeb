@@ -9,7 +9,7 @@ let LoginUserComponent = (props) =>{
     let [mensaje,setMessage]=useState("")
     let [error,setError]=useState({})
 
-    let {setLogin}=props
+    let {setLogin, createNotification}=props
     let navigate = useNavigate()
 
     useEffect(()=>{
@@ -24,35 +24,40 @@ let LoginUserComponent = (props) =>{
             newErrors.email= "El email debe tener un valor"
         setError(newErrors)
     }
-    let loginUser = async() =>{
-        let response = await fetch(backendUrl+"/users/login",
-        {method: "POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify({
-                email:email,
-                contrasena:contrasena
-            }) 
-        })
-        if(response.ok){
-            let jsonData= await response.json()
-            if(jsonData.apiKey!=null){
-                localStorage.setItem("apiKey",jsonData.apiKey)
-                localStorage.setItem("userId",jsonData.id)
-                localStorage.setItem("email",jsonData.email)
-            }
-            setMessage("Logged in") //Esto no iria dentro del otro IF?
-            setLogin(true)
-            navigate("/viajes")
+    let loginUser = async(event) =>{
+        event.preventDefault();
+        if (Object.keys(error).length > 0){
+            createNotification("No debe haber errores para poder iniciar sesión")
         }else{
-            let jsonData = await response.json()
-            let errors=""
-            if(jsonData.errors!=null){
-                jsonData.errors.array.forEach(e => {
-                    errors+=e+" "
-                });
-                setMessage(errors)
-            }else
-                setMessage(jsonData.error)
+            let response = await fetch(backendUrl+"/users/login",
+            {method: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    email:email,
+                    contrasena:contrasena
+                }) 
+            })
+            if(response.ok){
+                let jsonData= await response.json()
+                if(jsonData.apiKey!=null){
+                    localStorage.setItem("apiKey",jsonData.apiKey)
+                    localStorage.setItem("userId",jsonData.id)
+                    localStorage.setItem("email",jsonData.email)
+                }
+                setMessage("Sesión iniciada") 
+                setLogin(true)
+                navigate("/viajes")
+            }else{
+                let jsonData = await response.json()
+                let errors=""
+                if(jsonData.errors!=null){
+                    jsonData.errors.array.forEach(e => {
+                        errors+=e+" "
+                    });
+                    setMessage(errors)
+                }else
+                    setMessage(jsonData.error)
+            }
         }
     }
 
