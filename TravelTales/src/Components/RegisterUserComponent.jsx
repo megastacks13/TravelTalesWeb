@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {backendUrl} from "../Globals"
 import { useNavigate } from "react-router-dom";
 import '../PaginaRegistro.css';
+import FormField from "./FormFieldComponent.jsx";
 
 let RegisterUserComponent = (props) =>{
     let [nombre,setNombre] =useState(null)
@@ -26,7 +27,7 @@ let RegisterUserComponent = (props) =>{
             errores.apellidos= "El campo 'apellidos' debe tener un valor"
         if(email == "" )
             errores.email= "El campo 'email' debe tener un valor"
-        if (email!=null && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+        if (email != null && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
             errores.email_format = "El campo 'email' no tiene un formato válido" 
         if(contrasena == "" )
             errores.contrasena= "El campo 'contraseña' debe tener un valor"
@@ -78,38 +79,12 @@ let RegisterUserComponent = (props) =>{
                 <h2 class='card-title'>Registrarse</h2>
                 <h3>{mensaje}</h3>
                 <form>
-                    <div class='mb-3'>
-                        <label for="nombre" class='form-label'>NOMBRE</label>
-                        <input id='nombre' class='form-control' type='text' placeholder='Nombre' onChange={(e)=>setNombre(e.currentTarget.value)}/>
-                        {error.nombre && <p class='text-danger'>{error.nombre}</p>}
-                    </div>
-                    <div class='mb-3'>
-                        <label for="apellidos" class='form-label'>APELLIDOS</label>
-                        <input id='apellidos' class='form-control' type='text' placeholder='Apellidos' onChange={(e)=>setApellidos(e.currentTarget.value)}/>
-                        {error.apellidos && <p class='text-danger'>{error.apellidos}</p>}
-                    </div>
-                    
-                    <div class='mb-3'>
-                        <label for="correo" class='form-label'>CORREO</label>
-                        <input id='correo' class='form-control' type='text' placeholder='correo@correo.com' onChange={(e)=>setEmail(e.currentTarget.value)}/>
-                        {error.email && <p class='text-danger'>{error.email}</p>}
-                        {error.email_format && <p class='text-danger'>{error.email_format}</p>}
-                    </div>
-                    
-                    <div class='mb-3'>
-                        <label for="contrasena" class='form-label'>CONTRASEÑA</label>
-                        <input id='contrasena' class='form-control' type='password' onChange={(e)=>setContrasena(e.currentTarget.value)}/>
-                        {error.contrasena && <p class='text-danger'>{error.contrasena}</p>}
-                        {error.contrasena_format && <p class='text-danger'>{error.contrasena_format}</p>}
-                    </div>
-                    
-                    <div class='mb-3'>
-                        <label for="contrasena2" class='form-label'>REPETIR CONTRASEÑA</label>
-                        <input id='contrasena2' class='form-control' type='password' onChange={(e)=>setContrasena2(e.currentTarget.value)}/>
-                        {error.contrasena2 && <p class='text-danger'>{error.contrasena2}</p>}
-                        {error.coincidir && <p class='text-danger'>{error.coincidir}</p>}
-                    </div>
-                    
+                    <FormField id="nombre" label="NOMBRE" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.currentTarget.value)} errors={error.nombre ? [error.nombre] : []} />
+                    <FormField id="apellidos" label="APELLIDOS" placeholder="Apellidos" value={apellidos} onChange={(e) => setApellidos(e.currentTarget.value)} errors={error.apellidos ? [error.apellidos] : []} />
+                    <FormField id="correo" label="CORREO" placeholder="correo@correo.com" value={email} onChange={(e) => setEmail(e.currentTarget.value)} errors={[error.email, error.email_format].filter(Boolean)} />
+                    <FormField id="contrasena" label="CONTRASEÑA" type="password" value={contrasena} onChange={(e) => setContrasena(e.currentTarget.value)} errors={[error.contrasena, error.contrasena_format].filter(Boolean)} />
+                    <FormField id="contrasena2" label="REPETIR CONTRASEÑA" type="password" value={contrasena2} onChange={(e) => setContrasena2(e.currentTarget.value)} errors={[error.contrasena2, error.coincidir].filter(Boolean)} />
+
                     <div className='d-flex justify-content-between mt-3'> 
                         <button class='btn btn-sm btn-secondary me-2' type='button' onClick={() => window.history.back()}>Volver Atrás</button>
                         <button class='btn btn-sm btn-primary' onClick={registerUser}>Crear Cuenta</button>
