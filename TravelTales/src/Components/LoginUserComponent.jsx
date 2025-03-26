@@ -47,7 +47,7 @@ let LoginUserComponent = (props) =>{
                 }
                 setMessage("Sesión iniciada") 
                 setLogin(true)
-                navigate("/viajes")
+                navigate("/inicio")
             }else{
                 let jsonData = await response.json()
                 let errors=""
