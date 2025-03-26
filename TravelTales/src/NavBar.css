@@ -2,9 +2,27 @@
 
 a.navbar-brand{
     padding-left: 32px;
+    padding-right: 16px;
     transition: transform 0.5s;
+    font-size: 24px;
 }
 
 a.navbar-brand:hover{
     transform: scale(1.1);
+}
+
+li.nav-item{
+    padding: 0 16px 0;
+}
+a.nav-link.link-cerrar-sesion{
+    padding: 8px;
+
+}
+li.cerrar-sesion{
+    background-color: rgb(227, 115, 115);
+    margin-right: 32px;
+    margin-left: 32px;
+    padding: 0 4px 0;
+    border-radius: 16px;
+
 }
