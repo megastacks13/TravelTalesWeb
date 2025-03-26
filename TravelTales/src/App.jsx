@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import LoginUserComponent from './Components/LoginUserComponent';
 import RegisterUserComponent from './Components/RegisterUserComponent'
 import MenuInicioComponent from './Components/MenuInicioComponent';
+import InicioComponent from './Components/InicioComponent';
+
 import NavBarComponent from './Components/NavBarComponent.jsx';
 
 function App() {
@@ -53,6 +55,7 @@ function App() {
       )}
       <Routes>
         <Route path="/" element={<MenuInicioComponent/>}></Route>
+        <Route path="/inicio" element={<InicioComponent login={login}/>}></Route>
         <Route path="/register" element={<RegisterUserComponent createNotification={createNotification}/>}></Route>
         <Route path="/login" element={<LoginUserComponent setLogin={setLogin}/>}></Route>
         <Route path="/viajes" element={<ViajesComponent createNotification={createNotification}/>}></Route>
