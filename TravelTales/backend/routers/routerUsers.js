@@ -42,17 +42,17 @@ routerUsers.post("/login", async (req, res) => {
     try {
         const snapshot = await usersRef.orderByChild("email").equalTo(email).once("value");
         if (!snapshot.exists()) {
-            return res.status(401).json({ error: "invalid email or password" });
+            return res.status(401).json({ error: "invalid email" });
         }
 
         let user = null;
         snapshot.forEach(childSnapshot => {
-            if (childSnapshot.val().password === contrasena) {
+            if (childSnapshot.val().contrasena === contrasena) {
                 user = { id: childSnapshot.key, ...childSnapshot.val() };
             }
         });
 
-        if (!user) return res.status(401).json({ error: "invalid email or password" });
+        if (!user) return res.status(401).json({ error: "invalid password" });
 
         const apiKey = jwt.sign({ email: user.email, id: user.id, time: Date.now() }, "secret");
         activeApiKeys.push(apiKey);
