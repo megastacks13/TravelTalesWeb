@@ -77,7 +77,7 @@ let LoginUserComponent = (props) =>{
                     
                     <div className='d-flex justify-content-between mt-3'> 
                         <button class='btn btn-sm btn-secondary me-2' type='button' onClick={() => window.history.back()}>Volver Atrás</button>
-                        <button class='btn btn-sm btn-primary' onClick={loginUser}>Iniciar Sesión</button>
+                        <button class='btn btn-sm btn-primary' type='button' onClick={loginUser}>Iniciar Sesión</button>
                     </div>
                 </form>
             </div>
