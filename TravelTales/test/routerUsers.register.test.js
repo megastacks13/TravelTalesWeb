@@ -11,6 +11,32 @@ app.use(express.json());
 app.use('/users', routerUsers);
 
 describe('POST /register', () => {
+    it('should return 200 and insert a new user if data is valid', async () => {
+        // Simulamos que el usuario no existe en la base de datos
+        const mockSnapshot = {
+            exists: jest.fn().mockReturnValue(false),
+        };
+        jest.spyOn(usersRef, 'orderByChild').mockReturnValue({
+            equalTo: jest.fn().mockReturnValue({
+                once: jest.fn().mockResolvedValue(mockSnapshot),
+            }),
+        });
+
+        // Simulamos la creación de usuario
+        const mockNewUserRef = {
+            key: 'newUserId',
+            set: jest.fn().mockResolvedValue(),
+        };
+        jest.spyOn(usersRef, 'push').mockReturnValue(mockNewUserRef);
+
+        const res = await request(app)
+            .post('/users/register')
+            .send({ email: 'new@example.com', nombre: 'New User', apellidos: 'de la huerta', contrasena: 'securepass' });
+
+        expect(res.status).toBe(200);
+        expect(res.body.insertedUser).toEqual({ id: 'newUserId', email: 'new@example.com', nombre: 'New User' });
+    });
+    
     it('should return 400 if required fields are missing', async () => {
         const res = await request(app)
             .post('/users/register')
@@ -40,31 +66,6 @@ describe('POST /register', () => {
         expect(res.body.error).toBe("Ya existe un usuario asignado al email introducido");
     });
 
-    it('should return 200 and insert a new user if data is valid', async () => {
-        // Simulamos que el usuario no existe en la base de datos
-        const mockSnapshot = {
-            exists: jest.fn().mockReturnValue(false),
-        };
-        jest.spyOn(usersRef, 'orderByChild').mockReturnValue({
-            equalTo: jest.fn().mockReturnValue({
-                once: jest.fn().mockResolvedValue(mockSnapshot),
-            }),
-        });
-
-        // Simulamos la creación de usuario
-        const mockNewUserRef = {
-            key: 'newUserId',
-            set: jest.fn().mockResolvedValue(),
-        };
-        jest.spyOn(usersRef, 'push').mockReturnValue(mockNewUserRef);
-
-        const res = await request(app)
-            .post('/users/register')
-            .send({ email: 'new@example.com', nombre: 'New User', apellidos: 'de la huerta', contrasena: 'securepass' });
-
-        expect(res.status).toBe(200);
-        expect(res.body.insertedUser).toEqual({ id: 'newUserId', email: 'new@example.com', nombre: 'New User' });
-    });
 
     it('should return 402 if there is a problem inserting the user', async () => {
         // Simulamos un fallo en la inserción
