@@ -20,6 +20,7 @@ let RegisterUserComponent = (props) =>{
     },[nombre,apellidos,email,contrasena,contrasena2])
 
     let checkData = () =>{
+        
         let errores = {}
         if( nombre == "" )
             errores.nombre= "El campo 'nombre' debe tener un valor"
@@ -31,8 +32,7 @@ let RegisterUserComponent = (props) =>{
             errores.email_format = "El campo 'email' no tiene un formato válido" 
         if(contrasena == "" )
             errores.contrasena= "El campo 'contraseña' debe tener un valor"
-        else if (contrasena != null)
-            errores.contrasena_format = ""
+        if (contrasena!=null){
             if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(contrasena))
                 errores.contrasena_format = "El campo 'contraseña' debe cumplir con las siguientes características:"
             if (!/^(?=.*[a-z])(?=.*[A-Z])/.test(contrasena))
@@ -43,6 +43,7 @@ let RegisterUserComponent = (props) =>{
                 errores.contrasena_format += "\n\tAl menos un caracter especial"
             if (!/.{8,}$/.test(contrasena))    
                 errores.contrasena_format += "\n\tAl menos 8 caracteres"
+        }
         if(contrasena2 == "" )
             errores.contrasena2= "El campo 'repetir contraseña' debe tener un valor"
         if(contrasena!=null&&contrasena2!=null&&contrasena2!==contrasena )
@@ -51,6 +52,7 @@ let RegisterUserComponent = (props) =>{
     }
     let registerUser = async(event) =>{
         event.preventDefault();
+        console.log(error)
         if (Object.keys(error).length > 0){
             createNotification("No debe haber errores para poder registrarse")
         }else{

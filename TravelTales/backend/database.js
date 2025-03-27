@@ -13,5 +13,6 @@ admin.initializeApp({
   
 const db = admin.database();
 const usersRef = db.ref("users"); 
+const viajesRef = db.ref("viajes"); 
   
-export default {db , usersRef}
+export default {db , usersRef, viajesRef}
