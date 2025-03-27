@@ -3,7 +3,6 @@ let routerViajes = express.Router()
 import database from "../database.js";
 const { db, usersRef, viajesRef } = database;
 
-//falta probar
 routerViajes.post("/anadir", async (req, res) => {
     const { nombre, ubicacion, fechaIni, fechaFin, num, correoUser } = req.body;
     let errors = [];
@@ -40,14 +39,19 @@ routerViajes.post("/anadir", async (req, res) => {
     if (errors.length > 0) return res.status(400).json({ errors });
 
     try {
-        const snapshot = await viajesRef.orderByChild("nombre").equalTo(nombre).once("value");
-        if (snapshot.exists()) {
-            return res.status(401).json({ error: "Ya existe un viaje con el mismo nombre" });
-        }
-
-        const snapshot2 = await usersRef.orderByChild("correoUser").equalTo(correoUser).once("value");
+        const snapshot2 = await usersRef.orderByChild("email").equalTo(correoUser).once("value");
         if (!snapshot2.exists()) {
             return res.status(401).json({ error: "No existe un usuario con ese correo" });
+        }else{
+            const snapshot = await viajesRef.orderByChild("correoUser").equalTo(correoUser).once("value");
+            if (snapshot.exists()) {
+                const viajes = snapshot.val();
+                const viajeConMismoNombre = Object.values(viajes).find(viaje => viaje.nombre === nombre);
+        
+                if (viajeConMismoNombre) {
+                    return res.status(401).json({ error: "Ya has creado una viaje con el mismo nombre" });
+                }
+            }
         }
 
         const newViajeRef = viajesRef.push();
