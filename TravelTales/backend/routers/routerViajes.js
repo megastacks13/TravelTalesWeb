@@ -14,10 +14,12 @@ routerViajes.post("/anadir", async (req, res) => {
     if (!num) errors.push("No se ha recibido un número de personas");
     if (!correoUser) errors.push("No se ha recibido el correo del usuario");
 
+    // TODO: Ermmmm, según esto 99/99/9999 es una fecha válida
     const fechaRegex = /^\d{2}\/\d{2}\/\d{4}$/;
     if (fechaIni && !fechaRegex.test(fechaIni)) errors.push("La fecha de inicio no tiene el formato dd/mm/yyyy");
     if (fechaFin && !fechaRegex.test(fechaFin)) errors.push("La fecha de finalización no tiene el formato dd/mm/yyyy");
 
+    //TODO: Vale se parsea y tal pero la excepcion la mandamos a cuenca? Un try estaria wapardo
     const parseFecha = (fecha) => {
         const [dia, mes, año] = fecha.split('/').map(Number);
         return new Date(año, mes - 1, dia); 
