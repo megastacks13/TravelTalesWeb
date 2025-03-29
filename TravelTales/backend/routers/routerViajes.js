@@ -20,6 +20,7 @@ routerViajes.post("/anadir", async (req, res) => {
     if (fechaFin && !fechaRegex.test(fechaFin)) errors.push("La fecha de finalización no tiene el formato dd/mm/yyyy");
 
     //TODO: Vale se parsea y tal pero la excepcion la mandamos a cuenca? Un try estaria wapardo
+    // Si es verdad que dependiendo del tipo de input en el frontend no pasaría nada, pero a tenerlo en cuenta
     const parseFecha = (fecha) => {
         const [dia, mes, año] = fecha.split('/').map(Number);
         return new Date(año, mes - 1, dia); 
