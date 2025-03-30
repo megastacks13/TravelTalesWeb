@@ -51,21 +51,27 @@ let ViajesComponent = ( props)=>{
     }
 
     return (
-    <div>
-        <h2>Add Present</h2>
-        {message!="" && <h3>{message}</h3>}
-        <div>
-            <input type='text' placeholder="name" onChange={(e)=>changeProperty("name",e)}/>
-            {error.name&&<p>{error.name}</p>}
-            <input type='text' placeholder="description" onChange={(e)=>changeProperty("description",e)}/>
-            {error.description&&<p>{error.description}</p>}
-            <input type='number' placeholder="price" onChange={(e)=>changeProperty("price",e)}/>
-            {error.price&&<p>{error.price}</p>}
-            <input type='text' placeholder="url" onChange={(e)=>changeProperty("url",e)}/>
-            {error.url&&<p>{error.url}</p>}
+    <div class='card bg-transparent'>
+        <h1 class="card-header">Travel Tales</h1>
+
+        <div class='card-body bg-white  carta-registro'>
+            <h2 class='card-title'>Añadir viaje</h2>
+            <h3>{mensaje}</h3>
+            <form>
+                <FormField id="nombre" label="NOMBRE" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.currentTarget.value)} errors={error.nombre ? [error.nombre] : []} />
+                <FormField id="ubicacion" label="UBICACIÓN" placeholder="Apellidos" value={apellidos} onChange={(e) => setApellidos(e.currentTarget.value)} errors={error.apellidos ? [error.apellidos] : []} />
+                <FormField id="fechaIni" label="FECHA DE INICIO" placeholder="correo@correo.com" value={email} onChange={(e) => setEmail(e.currentTarget.value)} errors={[error.email, error.email_format].filter(Boolean)} />
+                <FormField id="fechaFin" label="FECHA DE FIN" type="password" value={contrasena} onChange={(e) => setContrasena(e.currentTarget.value)} errors={[error.contrasena, error.contrasena_format].filter(Boolean)} />
+                <FormField id="numero" label="NÚMERO DE VIAJEROS" type="password" value={contrasena2} onChange={(e) => setContrasena2(e.currentTarget.value)} errors={[error.contrasena2, error.coincidir].filter(Boolean)} />
+
+                <div className='d-flex justify-content-between mt-3'> 
+                    <button class='btn btn-sm btn-secondary me-2' type='button' onClick={() => window.history.back()}>Volver Atrás</button>
+                    <button class='btn btn-sm btn-primary' onClick={registerUser}>Añadir viaje</button>
+                </div>
+            </form>
         </div>
-        <button onClick={addPresentButton}>Add Present</button>
-    </div>)
+    </div>
+)
 }
 
 export default ViajesComponent;

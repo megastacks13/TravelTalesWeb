@@ -18,7 +18,7 @@ let NavBarComponent = (props) =>{
                 <div class="collapse navbar-collapse " id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item active">
-                            <a class="nav-link" href="/register">Añadir Viajes</a>
+                            <a class="nav-link" href="/anadir">Añadir Viajes</a>
                         </li>
                         <div class="vr bg-light"></div>
                         <li class="nav-item">
