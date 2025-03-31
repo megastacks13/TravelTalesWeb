@@ -10,6 +10,13 @@ let app = express()
 app.use(cors())
 app.use(express.json())
 
+app.use('/', (req, res, next) => {
+    if (req.query.apiKey != null)
+        return res.render('inicio')
+    next()
+});
+
+
 app.use(["/viajes"],(req,res,next)=>{
     console.log("Middleware execution")
 
