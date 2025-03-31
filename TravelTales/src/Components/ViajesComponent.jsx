@@ -43,7 +43,7 @@ let ViajesComponent = ( props)=>{
                     ubicacion:ubicacion,
                     fechaIni:fechaIni,
                     fechaFin:fechaFin,
-                    numero:numero
+                    num:numero
                 }) 
             })
             if(response.ok){
@@ -79,7 +79,8 @@ let ViajesComponent = ( props)=>{
                     label="FECHA DE INICIO" 
                     type="date" 
                     value={fechaIni} 
-                    onChange={(e) => setFechaIni(e.currentTarget.value)} 
+                    onChange={(e) => setFechaIni(e.currentTarget.value)}
+                    placeholder='yyyy/mm/dd' 
                 />
 
                 <FormField 
@@ -88,9 +89,10 @@ let ViajesComponent = ( props)=>{
                     type="date" 
                     value={fechaFin} 
                     onChange={(e) => setFechaFin(e.currentTarget.value)} 
+                    placeholder='yyyy/mm/dd'
                 />
 
-                <FormField id="numero" label="NÚMERO DE VIAJEROS" placeholder="1" value={numero} type="number" min='1' onChange={(e) => setNumero(e.currentTarget.value)} errors={error.numero ? [error.numero] : []} />
+                <FormField id="numero" label="NÚMERO DE VIAJEROS" placeholder="1" value={numero} type="number" min='1' onChange={(e) => {if (e.currentTarget.value >= 1) setNumero(e.currentTarget.value)}} errors={error.numero ? [error.numero] : []} />
 
                 <div className='d-flex justify-content-between mt-3'> 
                     <button class='btn btn-sm btn-secondary me-2' type='button' onClick={() => window.history.back()}>Volver Atrás</button>

@@ -95,7 +95,7 @@ describe('POST /anadir', () => {
         });
 
         const res = await request(app)
-            .post('/viajes/anadir')
+            .post('/viajes/anadir?api')
             .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"2001-02-01", fechaFin:"2002-02-01", num:9, correoUser:"correo@correo.com"});
 
         expect(res.status).toBe(401);
