@@ -8,10 +8,11 @@ const credenciales = require("./credenciales.json"); // Ajusta la ruta si es nec
 
 admin.initializeApp({
     credential: admin.credential.cert(credenciales), 
-    databaseURL: "https://traveltales-1653b-default-rtdb.europe-west1.firebasedatabase.app"
+    databaseURL: "https://traveltales-1653b-default-rtdb.europe-west1.firebasedatabase.app/"
   });
   
 const db = admin.database();
 const usersRef = db.ref("users"); 
+const viajesRef = db.ref("viajes"); 
   
-export default {db , usersRef}
+export default {db , usersRef, viajesRef}
