@@ -25,39 +25,30 @@ describe('POST /anadir', () => {
         expect(res.body.errors).toContain("No se ha recibido el correo del usuario");
     });
 
-    it('should return 400 since the inital dates are wrong', async () => {
+    it('should return 400 since the dates are wrong', async () => {
         const res = await request(app)
             .post('/viajes/anadir')
-            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"01", fechaFin:"000/0000/00", num:9, correoUser:"correo@correo.com"});
+            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"01/01/2001", fechaFin:"00/00/0000", num:9, correoUser:"correo@correo.com"});
 
         expect(res.status).toBe(400);
-        expect(res.body.errors).toContain("La fecha de inicio no tiene un formato válido (dd/mm/yyyy) o contiene valores incorrectos.");
-        expect(res.body.errors).toContain("La fecha de finalización no tiene un formato válido (dd/mm/yyyy) o contiene valores incorrectos.");
+        expect(res.body.errors).toContain("La fecha de inicio no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
+        expect(res.body.errors).toContain("La fecha de finalización no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
     });
 
     it('should return 400 since the dates are inexistent', async () => {
         const res = await request(app)
             .post('/viajes/anadir')
-            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"99/99/2000", fechaFin:"32/-1/9999", num:9, correoUser:"correo@correo.com"});
+            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"2000-99-99", fechaFin:"9999-1-32", num:9, correoUser:"correo@correo.com"});
 
         expect(res.status).toBe(400);
-        expect(res.body.errors).toContain("La fecha de inicio no tiene un formato válido (dd/mm/yyyy) o contiene valores incorrectos.");
-        expect(res.body.errors).toContain("La fecha de finalización no tiene un formato válido (dd/mm/yyyy) o contiene valores incorrectos.");
+        expect(res.body.errors).toContain("La fecha de inicio no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
+        expect(res.body.errors).toContain("La fecha de finalización no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
     });
 
     it('should return 400 since the dates are not in order', async () => {
         const res = await request(app)
             .post('/viajes/anadir')
-            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"01/02/2001", fechaFin:"01/01/2001", num:9, correoUser:"correo@correo.com"});
-
-        expect(res.status).toBe(400);
-        expect(res.body.errors).toContain("La fecha de finalización debe ser posterior a la fecha de inicio");
-    });
-
-    it('should return 400 since the dates are in wrong order', async () => {
-        const res = await request(app)
-            .post('/viajes/anadir')
-            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"01/02/2004", fechaFin:"01/02/2003", num:9, correoUser:"correo@correo.com"});
+            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"2001-02-01", fechaFin:"2001-01-01", num:9, correoUser:"correo@correo.com"});
 
         expect(res.status).toBe(400);
         expect(res.body.errors).toContain("La fecha de finalización debe ser posterior a la fecha de inicio");
@@ -66,7 +57,7 @@ describe('POST /anadir', () => {
     it('should return 400 since the people is not a positive number', async () => {
         const res = await request(app)
             .post('/viajes/anadir')
-            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"01/02/2004", fechaFin:"01/02/2003", num:-3, correoUser:"correo@correo.com"});
+            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"2001-02-01", fechaFin:"2002-02-01", num:-3, correoUser:"correo@correo.com"});
 
         expect(res.status).toBe(400);
         expect(res.body.errors).toContain("El número de personas debe ser un número entero mayor o igual a 1");
@@ -75,7 +66,7 @@ describe('POST /anadir', () => {
     it('should return 400 since the people is NAN', async () => {
         const res = await request(app)
             .post('/viajes/anadir')
-            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"01/02/2004", fechaFin:"01/02/2003", num:"k", correoUser:"correo@correo.com"});
+            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"2001-02-01", fechaFin:"2002-02-01", num:"k", correoUser:"correo@correo.com"});
 
         expect(res.status).toBe(400);
         expect(res.body.errors).toContain("El número de personas debe ser un número entero mayor o igual a 1");
@@ -105,7 +96,7 @@ describe('POST /anadir', () => {
 
         const res = await request(app)
             .post('/viajes/anadir')
-            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"01/09/2001", fechaFin:"03/09/2001", num:9, correoUser:"correo@correo.com"});
+            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"2001-02-01", fechaFin:"2002-02-01", num:9, correoUser:"correo@correo.com"});
 
         expect(res.status).toBe(401);
         expect(res.body.error).toContain("No existe un usuario con ese correo");
@@ -129,7 +120,7 @@ describe('POST /anadir', () => {
         const mockSnapshotViajes = {
             exists: jest.fn().mockReturnValue(true),
             val: jest.fn().mockReturnValue({
-                "viajeId123": { nombre: "Viaje Testarudo", ubicacion: "Las Antípodas", fechaIni: "01/09/2001", fechaFin: "03/09/2001", num: 9, correoUser: "correo@correo.com" }
+                "viajeId123": { nombre: "Viaje Testarudo", ubicacion: "Las Antípodas", fechaIni: "2001-02-01", fechaFin: "2002-02-01", num: 9, correoUser: "correo@correo.com" }
             })
         };
         jest.spyOn(viajesRef, 'orderByChild').mockReturnValue({
@@ -141,7 +132,7 @@ describe('POST /anadir', () => {
         // Enviamos la petición para añadir el viaje con el mismo nombre
         const res = await request(app)
             .post('/viajes/anadir')
-            .send({ nombre: "Viaje Testarudo", ubicacion: "Las Antípodas", fechaIni: "01/09/2001", fechaFin: "03/09/2001", num: 9, correoUser: "correo@correo.com" });
+            .send({ nombre: "Viaje Testarudo", ubicacion: "Las Antípodas", fechaIni: "2001-02-01", fechaFin: "2002-02-01", num: 9, correoUser: "correo@correo.com" });
     
         // Comprobamos que la respuesta sea un 401 y el error contenga el mensaje de "viaje ya existente"
         expect(res.status).toBe(401);
@@ -172,15 +163,14 @@ describe('POST /anadir', () => {
             }),
         });
 
-
         const res = await request(app)
             .post('/viajes/anadir')
-            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"01/09/2001", fechaFin:"03/09/2001", num:9, correoUser:"correo@correo.com"});
+            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"2001-09-01", fechaFin:"2001-09-03", num:9, correoUser:"correo@correo.com"});
 
         expect(res.status).toBe(200);
-        let viajeAnadido = res.body.viajeAnadido
-        let tieneId = delete viajeAnadido['id']
-        expect(tieneId).toBe(true)
-        expect(viajeAnadido).toEqual({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"01/09/2001", fechaFin:"03/09/2001", num:9, correoUser:"correo@correo.com", });
+        let viajeAnadido = res.body.viajeAnadido;
+        let tieneId = delete viajeAnadido['id'];
+        expect(tieneId).toBe(true);
+        expect(viajeAnadido).toEqual({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"2001-09-01", fechaFin:"2001-09-03", num:9, correoUser:"correo@correo.com"});
     });
 });
