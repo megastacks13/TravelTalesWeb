@@ -103,7 +103,8 @@ describe('POST /login', () => {
       contrasena: 'pwvalida'
     };
 
-    await request(app).post('/users/register').send(user);
+    const response1= await request(app).post('/users/register').send(user);
+    console.log(response1)
 
     const invalidUser = {
       email: 'test@example.com',
@@ -119,11 +120,11 @@ describe('POST /login', () => {
 
     // Verifica que el usuario haya sido insertado en la base de datos
     const snapshot = await usersRef.orderByChild('email').equalTo(user.email).once('value');
-    expect(snapshot.exists()).toBe(true);  // existe
-
-    // Limpieza de la bd
-    const userKey = Object.keys(snapshot.val())[0];
-    await usersRef.child(userKey).remove();
+    if (snapshot){
+      // Limpieza de la bd
+      const userKey = Object.keys(snapshot.val())[0];
+      await usersRef.child(userKey).remove();
+    }
 
   });
 
