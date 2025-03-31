@@ -10,23 +10,23 @@ let InicioComponent = (props) =>{
 
   useEffect(()=>{
     checkLogin();
-  },[])
+  })
 
   let checkLogin = () => {
-    if(!login)
+    if(!login){
       navigate("/")
+    }
   }
 
   return (
     <div>
       
       <h1 className='titulo-pagina-inicio'>Travel Tales</h1>
-      {login && 
-        <nav className='nav-pagina-inicio'>
-          <button onClick={() => navigate("/viajes/anadir")} type="button" class="btn btn-primary btn-lg botones-pagina-inicio">Añadir Viaje</button>
-          <button onClick={() => navigate("/viajes/anadir")} type="button" class="btn btn-primary btn-lg botones-pagina-inicio">Buscar Viajes</button>
-        </nav>
-      }
+      <nav className='nav-pagina-inicio'>
+        <button onClick={() => navigate("/viajes/anadir")} type="button" class="btn btn-primary btn-lg botones-pagina-inicio">Añadir Viaje</button>
+        <button onClick={() => navigate("/viajes/anadir")} type="button" class="btn btn-primary btn-lg botones-pagina-inicio">Buscar Viajes</button>
+      </nav>
+      
       
     </div>
   )
