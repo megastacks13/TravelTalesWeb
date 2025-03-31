@@ -14,9 +14,13 @@ describe('POST /login', () => {
 
   it('Debe iniciar la sesión para un usuario con datos validos', async () => {
     const user = {
-      email: 'test@example.com',
-      contrasena: 'Pwvalida1_'
-    };
+          nombre: 'TestUser',
+          apellidos: 'apellTestUser',
+          email: 'test@example.com',
+          contrasena: 'pwvalida'
+        };
+    
+    await request(app).post('/users/register').send(user);
 
     const response = await request(app)
       .post('/users/login')
@@ -27,6 +31,14 @@ describe('POST /login', () => {
     expect(response.body).toHaveProperty('apiKey');
     expect(response.body).toHaveProperty('email');
     expect(response.body.email).toBe(user.email);
+
+    // Verifica que el usuario haya sido insertado en la base de datos
+    const snapshot = await usersRef.orderByChild('email').equalTo(user.email).once('value');
+    expect(snapshot.exists()).toBe(true);  // existe
+
+    // Limpieza de la bd
+    const userKey = Object.keys(snapshot.val())[0];
+    await usersRef.child(userKey).remove();
 
   });
 
@@ -85,13 +97,22 @@ describe('POST /login', () => {
 
   it('La contraseña no es correcta', async () => {
     const user = {
+      nombre: 'TestUser',
+      apellidos: 'apellTestUser',
+      email: 'test@example.com',
+      contrasena: 'pwvalida'
+    };
+
+    await request(app).post('/users/register').send(user);
+
+    const invalidUser = {
       email: 'test@example.com',
       contrasena: 'ContraNoValida1_'
     };
 
     const response = await request(app)
       .post('/users/login')
-      .send(user);
+      .send(invalidUser);
 
     expect(response.status).toBe(402); 
     expect(response.body.error).toBe("Contraseña incorrecta");

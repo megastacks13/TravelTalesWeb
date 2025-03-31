@@ -78,15 +78,9 @@ routerViajes.post("/anadir", async (req, res) => {
 
         let planificacion=false
         const newViajeRef = viajesRef.push();
-<<<<<<< HEAD
-        await newViajeRef.set({ nombre, ubicacion, fechaIni, fechaFin, num, correoUser, planificacion });
-
-        res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, correoUser, planificacion } });
-=======
         await newViajeRef.set({ nombre, ubicacion, fechaIni, fechaFin, num, email });
 
         res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, email } });
->>>>>>> feature/TT-012
     } catch {
         res.status(402).json({ error: "Ha habido un error insertando el viaje" });
     }
