@@ -102,44 +102,45 @@ describe('POST /anadir', () => {
         expect(res.status).toBe(401);
         expect(res.body.error).toContain("No existe un usuario con ese correo");
     });
-
-    // TODO: Arreglar este test
+    
     it('should return 401 since the trip already exists', async () => {
-        it('should return 401 since the trip already exists', async () => {
-            // Asumimos usuario existente
-            const mockSnapshotUser = {
-                exists: jest.fn().mockReturnValue(true),
-            };
-            jest.spyOn(usersRef, 'orderByChild').mockReturnValue({
-                equalTo: jest.fn().mockReturnValue({
-                    once: jest.fn().mockResolvedValue(mockSnapshotUser),
-                }),
-            });
-        
-            // Asumimos viaje existente para el usuario
-            const mockSnapshotViajes = {
-                exists: jest.fn().mockReturnValue(true),
-                val: jest.fn().mockReturnValue({
-                    "viajeId123": { nombre: "Viaje Testarudo", ubicacion: "Las Antípodas", fechaIni: "01/09/2001", fechaFin: "03/09/2001", num: 9, correoUser: "correo@correo.com" }
-                })
-            };
-            jest.spyOn(viajesRef, 'orderByChild').mockReturnValue({
-                equalTo: jest.fn().mockReturnValue({
-                    once: jest.fn().mockResolvedValue(mockSnapshotViajes),
-                }),
-            });
-        
-            // Enviamos la petición para añadir el viaje con el mismo nombre
-            const res = await request(app)
-                .post('/viajes/anadir')
-                .send({ nombre: "Viaje Testarudo", ubicacion: "Las Antípodas", fechaIni: "01/09/2001", fechaFin: "03/09/2001", num: 9, correoUser: "correo@correo.com" });
-        
-            // Comprobamos que la respuesta sea un 401 y el error contenga el mensaje de "viaje ya existente"
-            expect(res.status).toBe(401);
-            expect(res.body.errors).toContain("Ya has creado un viaje con el mismo nombre");
+        // Asumimos usuario existente
+        const mockSnapshotUser = {
+            exists: jest.fn().mockReturnValue(true),
+            val: jest.fn().mockReturnValue({
+                "userID123": { email: "correo@correo.com" }
+            })
+        };
+        jest.spyOn(usersRef, 'orderByChild').mockReturnValue({
+            equalTo: jest.fn().mockReturnValue({
+                once: jest.fn().mockResolvedValue(mockSnapshotUser),
+            }),
         });
-        
+    
+        // Asumimos viaje existente para el usuario
+        const mockSnapshotViajes = {
+            exists: jest.fn().mockReturnValue(true),
+            val: jest.fn().mockReturnValue({
+                "viajeId123": { nombre: "Viaje Testarudo", ubicacion: "Las Antípodas", fechaIni: "01/09/2001", fechaFin: "03/09/2001", num: 9, correoUser: "correo@correo.com" }
+            })
+        };
+        jest.spyOn(viajesRef, 'orderByChild').mockReturnValue({
+            equalTo: jest.fn().mockReturnValue({
+                once: jest.fn().mockResolvedValue(mockSnapshotViajes),
+            }),
+        });
+    
+        // Enviamos la petición para añadir el viaje con el mismo nombre
+        const res = await request(app)
+            .post('/viajes/anadir')
+            .send({ nombre: "Viaje Testarudo", ubicacion: "Las Antípodas", fechaIni: "01/09/2001", fechaFin: "03/09/2001", num: 9, correoUser: "correo@correo.com" });
+    
+        // Comprobamos que la respuesta sea un 401 y el error contenga el mensaje de "viaje ya existente"
+        expect(res.status).toBe(401);
+        expect(res.body.error).toContain("Ya has creado un viaje con el mismo nombre");
     });
+        
+   
 
     // Test de casos 200 ------------------------------------------------------------
 
