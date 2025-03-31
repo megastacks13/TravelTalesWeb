@@ -4,7 +4,7 @@ import {Routes,Route,Link, useNavigate} from 'react-router-dom'
 import ViajesComponent from './Components/ViajesComponent';
 import { useEffect, useState } from 'react';
 import LoginUserComponent from './Components/LoginUserComponent';
-import RegisterUserComponent from './Components/RegisterUserComponent'
+import RegisterUserComponent from './Components/RegisterUserComponent';
 import MenuInicioComponent from './Components/MenuInicioComponent';
 import InicioComponent from './Components/InicioComponent';
 
@@ -58,7 +58,7 @@ function App() {
         <Route path="/inicio" element={<InicioComponent login={login}/>}></Route>
         <Route path="/register" element={<RegisterUserComponent createNotification={createNotification}/>}></Route>
         <Route path="/login" element={<LoginUserComponent setLogin={setLogin}/>}></Route>
-        <Route path="/viajes" element={<ViajesComponent createNotification={createNotification}/>}></Route>
+        <Route path="/viajes/anadir" element={<ViajesComponent createNotification={createNotification}/>}></Route>
       </Routes>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     </div>
