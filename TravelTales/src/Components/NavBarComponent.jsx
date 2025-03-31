@@ -1,7 +1,3 @@
-import { useEffect, useState } from "react";
-import {backendUrl} from "../Globals.js"
-import { useNavigate } from "react-router-dom";
-import FormField from "./FormFieldComponent.jsx";
 import '../NavBar.css';
 
 let NavBarComponent = (props) =>{
