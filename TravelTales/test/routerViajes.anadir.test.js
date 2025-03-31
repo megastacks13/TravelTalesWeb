@@ -25,24 +25,33 @@ describe('POST /anadir', () => {
         expect(res.body.errors).toContain("No se ha recibido el correo del usuario");
     });
 
-    it('should return 400 since the dates are wrong', async () => {
+    it('should return 400 since the inital dates are wrong', async () => {
         const res = await request(app)
             .post('/viajes/anadir')
             .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"01", fechaFin:"000/0000/00", num:9, correoUser:"correo@correo.com"});
 
         expect(res.status).toBe(400);
-        expect(res.body.errors).toContain("La fecha de inicio no tiene el formato dd/mm/yyyy");
-        expect(res.body.errors).toContain("La fecha de finalización no tiene el formato dd/mm/yyyy");
+        expect(res.body.errors).toContain("La fecha de inicio no tiene un formato válido (dd/mm/yyyy) o contiene valores incorrectos.");
+        expect(res.body.errors).toContain("La fecha de finalización no tiene un formato válido (dd/mm/yyyy) o contiene valores incorrectos.");
     });
 
-    it('should return 400 since the dates are wrong', async () => {
+    it('should return 400 since the dates are inexistent', async () => {
         const res = await request(app)
             .post('/viajes/anadir')
-            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"01", fechaFin:"000/0000/00", num:9, correoUser:"correo@correo.com"});
+            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"99/99/2000", fechaFin:"32/-1/9999", num:9, correoUser:"correo@correo.com"});
 
         expect(res.status).toBe(400);
-        expect(res.body.errors).toContain("La fecha de inicio no tiene el formato dd/mm/yyyy");
-        expect(res.body.errors).toContain("La fecha de finalización no tiene el formato dd/mm/yyyy");
+        expect(res.body.errors).toContain("La fecha de inicio no tiene un formato válido (dd/mm/yyyy) o contiene valores incorrectos.");
+        expect(res.body.errors).toContain("La fecha de finalización no tiene un formato válido (dd/mm/yyyy) o contiene valores incorrectos.");
+    });
+
+    it('should return 400 since the dates are not in order', async () => {
+        const res = await request(app)
+            .post('/viajes/anadir')
+            .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"01/02/2001", fechaFin:"01/01/2001", num:9, correoUser:"correo@correo.com"});
+
+        expect(res.status).toBe(400);
+        expect(res.body.errors).toContain("La fecha de finalización debe ser posterior a la fecha de inicio");
     });
 
     it('should return 400 since the dates are in wrong order', async () => {
@@ -93,7 +102,6 @@ describe('POST /anadir', () => {
                 once: jest.fn().mockResolvedValue(mockSnapshotViajes),
             }),
         });
-
 
         const res = await request(app)
             .post('/viajes/anadir')

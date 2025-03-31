@@ -14,7 +14,7 @@ routerViajes.post("/anadir", async (req, res) => {
     if (!num) errors.push("No se ha recibido un número de personas");
     if (!correoUser) errors.push("No se ha recibido el correo del usuario");
 
-    const fechaRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19\d{2}|20[0-9]{2})$/;
+    const fechaRegex =/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(\d{4})$/
 
     if (fechaIni && !fechaRegex.test(fechaIni)) errors.push("La fecha de inicio no tiene un formato válido (dd/mm/yyyy) o contiene valores incorrectos.");
     if (fechaFin && !fechaRegex.test(fechaFin)) errors.push("La fecha de finalización no tiene un formato válido (dd/mm/yyyy) o contiene valores incorrectos.");
@@ -48,7 +48,7 @@ routerViajes.post("/anadir", async (req, res) => {
         errors.push("El número de personas debe ser un número entero mayor o igual a 1");
     }
 
-    const ubicacionRegex = /^[A-Za-z][A-Za-z0-9\s.,/-]{2,}$/;
+    const ubicacionRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü][A-Za-z0-9ÁÉÍÓÚáéíóúÑñÜü\s.,/-]{2,}$/;
 
     if (ubicacion && !ubicacionRegex.test(ubicacion)) {
         errors.push("La ubicación debe comenzar con una letra, tener al menos 3 caracteres y solo contener letras, números y caracteres especiales (.,/ -).");
