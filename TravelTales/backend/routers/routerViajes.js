@@ -14,29 +14,44 @@ routerViajes.post("/anadir", async (req, res) => {
     if (!num) errors.push("No se ha recibido un número de personas");
     if (!correoUser) errors.push("No se ha recibido el correo del usuario");
 
-    // TODO: Ermmmm, según esto 99/99/9999 es una fecha válida
-    const fechaRegex = /^\d{2}\/\d{2}\/\d{4}$/;
-    if (fechaIni && !fechaRegex.test(fechaIni)) errors.push("La fecha de inicio no tiene el formato dd/mm/yyyy");
-    if (fechaFin && !fechaRegex.test(fechaFin)) errors.push("La fecha de finalización no tiene el formato dd/mm/yyyy");
+    const fechaRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19\d{2}|20[0-9]{2})$/;
 
-    //TODO: Vale se parsea y tal pero la excepcion la mandamos a cuenca? Un try estaria wapardo
-    // Si es verdad que dependiendo del tipo de input en el frontend no pasaría nada, pero a tenerlo en cuenta
+    if (fechaIni && !fechaRegex.test(fechaIni)) errors.push("La fecha de inicio no tiene un formato válido (dd/mm/yyyy) o contiene valores incorrectos.");
+    if (fechaFin && !fechaRegex.test(fechaFin)) errors.push("La fecha de finalización no tiene un formato válido (dd/mm/yyyy) o contiene valores incorrectos.");
+    
     const parseFecha = (fecha) => {
         const [dia, mes, año] = fecha.split('/').map(Number);
-        return new Date(año, mes - 1, dia); 
+
+        const fechaDate = new Date(año, mes - 1, dia);
+        if (fechaDate.getDate() !== dia || fechaDate.getMonth() !== mes - 1) {
+            throw new Error("La fecha no es válida, el día no corresponde al mes.");
+        }
+    
+        return fechaDate;
     };
-
+    
     if (fechaIni && fechaFin && fechaRegex.test(fechaIni) && fechaRegex.test(fechaFin)) {
-        const fechaInicioDate = parseFecha(fechaIni);
-        const fechaFinDate = parseFecha(fechaFin);
-
-        if (fechaFinDate <= fechaInicioDate) {
-            errors.push("La fecha de finalización debe ser posterior a la fecha de inicio");
+        try {
+            const fechaInicioDate = parseFecha(fechaIni);
+            const fechaFinDate = parseFecha(fechaFin);
+    
+            if (fechaFinDate <= fechaInicioDate) {
+                errors.push("La fecha de finalización debe ser posterior a la fecha de inicio");
+            }
+        } catch (error) {
+            errors.push(error.message);
         }
     }
+    
 
     if (num && (!Number.isInteger(Number(num)) || Number(num) < 1)) {
         errors.push("El número de personas debe ser un número entero mayor o igual a 1");
+    }
+
+    const ubicacionRegex = /^[A-Za-z][A-Za-z0-9\s.,/-]{2,}$/;
+
+    if (ubicacion && !ubicacionRegex.test(ubicacion)) {
+        errors.push("La ubicación debe comenzar con una letra, tener al menos 3 caracteres y solo contener letras, números y caracteres especiales (.,/ -).");
     }
 
     if (errors.length > 0) return res.status(400).json({ errors });
@@ -52,7 +67,7 @@ routerViajes.post("/anadir", async (req, res) => {
                 const viajeConMismoNombre = Object.values(viajes).find(viaje => viaje.nombre === nombre);
         
                 if (viajeConMismoNombre) {
-                    return res.status(401).json({ error: "Ya has creado una viaje con el mismo nombre" });
+                    return res.status(401).json({ error: "Ya has creado un viaje con el mismo nombre" });
                 }
             }
         }
