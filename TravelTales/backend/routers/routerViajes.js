@@ -54,12 +54,37 @@ routerViajes.post("/anadir", async (req, res) => {
             }
         }
 
+        let planificacion=false
         const newViajeRef = viajesRef.push();
-        await newViajeRef.set({ nombre, ubicacion, fechaIni, fechaFin, num, correoUser });
+        await newViajeRef.set({ nombre, ubicacion, fechaIni, fechaFin, num, correoUser, planificacion });
 
-        res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, correoUser } });
+        res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, correoUser, planificacion } });
     } catch {
         res.status(402).json({ error: "Ha habido un error insertando el viaje" });
+    }
+});
+
+routerViajes.post("/anadirPlanificacion", async (req, res) => {
+    const { idViaje } = req.query;
+    let errors = [];
+    if (!db) errors.push('Database error')
+    if (!idViaje) errors.push("No se ha recibido un id de viaje");
+
+    if (errors.length > 0) return res.status(400).json({ errors });
+
+    try {
+        const snapshot = await viajesRef.child(idViaje).once("value");
+    
+        if (!snapshot.exists()) {
+            return res.status(404).json({ error: "No se encontró el viaje con el id proporcionado" });
+        }
+    
+        await viajesRef.child(idViaje).update({ planificacion: true });
+    
+        res.json({ mensaje: "Se ha crado la planificación del viaje." });
+    
+    } catch (error) {
+        res.status(500).json({ error: "Ha ocurrido un error al crear la planificación del viaje", detalle: error.message });
     }
 });
 
