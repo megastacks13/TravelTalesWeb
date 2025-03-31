@@ -21,7 +21,8 @@
     "jsonwebtoken": "9.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "7.4.0"
+    "react-router-dom": "7.4.0",
+    "tough-cookie": "5.1.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.26.9",
