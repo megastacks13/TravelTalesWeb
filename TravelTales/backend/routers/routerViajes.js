@@ -13,9 +13,9 @@ routerViajes.post("/anadir", async (req, res) => {
     if (!fechaFin) errors.push("No se han recibido una fecha de finalización");
     if (!num) errors.push("No se ha recibido un número de personas");
     let email=req.infoApiKey.email
-    if (!email) errors.push("No se ha recibido el correo del usuario");
+    if (email == null) errors.push("No se ha recibido el correo del usuario");
 
-    const fechaRegex = /^\d{4}-\d{2}-\d{2}$/;
+    const fechaRegex =/^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
 
     if (fechaIni && !fechaRegex.test(fechaIni)) errors.push("La fecha de inicio no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
     if (fechaFin && !fechaRegex.test(fechaFin)) errors.push("La fecha de finalización no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
