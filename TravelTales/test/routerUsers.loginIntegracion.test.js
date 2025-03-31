@@ -117,6 +117,14 @@ describe('POST /login', () => {
     expect(response.status).toBe(402); 
     expect(response.body.error).toBe("Contraseña incorrecta");
 
+    // Verifica que el usuario haya sido insertado en la base de datos
+    const snapshot = await usersRef.orderByChild('email').equalTo(user.email).once('value');
+    expect(snapshot.exists()).toBe(true);  // existe
+
+    // Limpieza de la bd
+    const userKey = Object.keys(snapshot.val())[0];
+    await usersRef.child(userKey).remove();
+
   });
 
 });
