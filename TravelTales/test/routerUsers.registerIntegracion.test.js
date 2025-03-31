@@ -32,6 +32,10 @@ describe('POST /register', () => {
     // Verifica que el usuario haya sido insertado en la base de datos
     const snapshot = await usersRef.orderByChild('email').equalTo(newUser.email).once('value');
     expect(snapshot.exists()).toBe(true);  // existe
+
+    // Limpieza de la bd
+    const userKey = Object.keys(snapshot.val())[0];
+    await usersRef.child(userKey).remove();
   });
 
   it('debe retornar un error si el email ya esta registrado', async () => {
@@ -58,6 +62,13 @@ describe('POST /register', () => {
 
     expect(response.status).toBe(401); // comprueba que se devuelva un error
     expect(response.body.error).toBe('Ya existe un usuario asignado al email introducido'); // comprueba que el mensaje de error sea el correcto
+
+
+    // Verifica que el usuario haya sido insertado en la base de datos
+    const snapshot = await usersRef.orderByChild('email').equalTo(newUser.email).once('value');
+    // Limpieza de la bd
+    const userKey = Object.keys(snapshot.val())[0];
+    await usersRef.child(userKey).remove();
   });
 
   it('debe retornar un error si faltan el nombre', async () => {
