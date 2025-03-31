@@ -1,53 +1,72 @@
 import { useState,useEffect } from "react";
 import { backendUrl } from "../Globals";
 import { useNavigate } from "react-router-dom";
+import FormField from "./FormFieldComponent.jsx";
 
 let ViajesComponent = ( props)=>{
-    let [present,setPresent] = useState({})
-    let [message,setMessage] = useState("")
-    let [error,setError]=useState({})
+    let [nombre,setNombre] =useState(null)
+    let [ubicacion,setUbicacion] =useState(null)
+    let [fechaIni,setFechaIni] =useState(null)
+    let [fechaFin,setFechaFin] =useState(null)
+    let [numero,setNumero] =useState(null)
     
     let {createNotification}=props
+    let [mensaje,setMensaje]=useState("")
+    let [error,setError]=useState({})
     let navigate = useNavigate()
     useEffect(()=>{
         checkData();
-    },[present])
+    },[nombre,ubicacion,fechaIni,fechaFin,numero])
     
 
     let checkData = () =>{
-        let newErrors = {}
-        if( present.name == "" )
-            newErrors.name= "Name must have a value"
-        if( present.description == "" )
-            newErrors.description= "Description must have a value"
-        if( present.price <0 )
-            newErrors.price= "The price must have a positive value"
-        if( present.url == "" )
-            newErrors.url= "Url must have a value"
-        setError(newErrors)
+        let errores = {};
+        let regex = /^\d{2}\/\d{2}\/\d{4}$/;
+        if(nombre == "" )
+            errores.nombre= "El campo 'nombre' debe tener un valor";
+        if(ubicacion == "" )
+            errores.ubicacion= "El campo 'ubicación' debe tener un valor";
+        if(!regex.test(fechaIni))
+            errores.fechaIni= "La fecha de inicio debe cumplir con un formato adecuado (dd/mm/yyyy)";
+        if(!regex.test(fechaFin))
+            errores.fechaFin= "La fecha de fin debe cumplir con un formato adecuado (dd/mm/yyyy)";
+        if (!Number.isInteger(Number(numero)) || Number(numero) < 1)
+            errores.numero = "El número de personas debe ser un número entero mayor o igual a 1";
+        setError(errores);
     }
 
-    let changeProperty = (propertyName, e)=>{
-        let newPresent = {...present, [propertyName]:e.currentTarget.value}
-        setPresent(newPresent)
-    }
-
-    let addPresentButton = async() =>{
-        let newPresent = {...present,email:localStorage.getItem("email")}
-        let response = await fetch(backendUrl+"/presents?apiKey="+localStorage.getItem("apiKey"),{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body: JSON.stringify(newPresent)
-        })
-        if(response.ok){
-            setMessage("Present uploaded")
-            createNotification("Present correctly uploaded")
-            navigate("/myPresents")
+    let addTravel = async(event) =>{
+        event.preventDefault();
+        console.log(error);
+        if (Object.keys(error).length > 0){
+            createNotification("No debe haber errores para poder añadir un viaje")
         }else{
-            let jsonData = await response.json()
-            setMessage(jsonData.error)
+            let response = await fetch(backendUrl+"/viajes/anadir", 
+            {method: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    nombre:nombre,
+                    ubicacion:ubicacion,
+                    fechaIni:fechaIni,
+                    fechaFin:fechaFin,
+                    numero:numero
+                }) 
+            })
+            if(response.ok){
+                navigate("/inicio")
+            }else{
+                let jsonData = await response.json()
+                let errores=""
+                if(jsonData.errors!=null){
+                    jsonData.errors.array.forEach(e => {
+                        errores+=e+" "
+                    });
+                    setMensaje(errores)
+                }else
+                    setMensaje(jsonData.error)
+                
+            }
         }
-
     }
 
     return (
@@ -59,14 +78,14 @@ let ViajesComponent = ( props)=>{
             <h3>{mensaje}</h3>
             <form>
                 <FormField id="nombre" label="NOMBRE" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.currentTarget.value)} errors={error.nombre ? [error.nombre] : []} />
-                <FormField id="ubicacion" label="UBICACIÓN" placeholder="Apellidos" value={apellidos} onChange={(e) => setApellidos(e.currentTarget.value)} errors={error.apellidos ? [error.apellidos] : []} />
-                <FormField id="fechaIni" label="FECHA DE INICIO" placeholder="correo@correo.com" value={email} onChange={(e) => setEmail(e.currentTarget.value)} errors={[error.email, error.email_format].filter(Boolean)} />
-                <FormField id="fechaFin" label="FECHA DE FIN" type="password" value={contrasena} onChange={(e) => setContrasena(e.currentTarget.value)} errors={[error.contrasena, error.contrasena_format].filter(Boolean)} />
-                <FormField id="numero" label="NÚMERO DE VIAJEROS" type="password" value={contrasena2} onChange={(e) => setContrasena2(e.currentTarget.value)} errors={[error.contrasena2, error.coincidir].filter(Boolean)} />
+                <FormField id="ubicacion" label="UBICACIÓN" placeholder="Ubicación" value={ubicacion} onChange={(e) => setUbicacion(e.currentTarget.value)} errors={error.ubicacion ? [error.ubicacion] : []} />
+                <FormField id="fechaIni" label="FECHA DE INICIO" placeholder="01/01/0001" value={fechaIni} onChange={(e) => setFechaIni(e.currentTarget.value)} errors={error.fechaIni ? [error.fechaIni] : []} />
+                <FormField id="fechaFin" label="FECHA DE FIN" placeholder="31/12/9999" value={fechaFin} onChange={(e) => setFechaFin(e.currentTarget.value)} errors={error.fechaFin ? [error.fechaFin] : []} />
+                <FormField id="numero" label="NÚMERO DE VIAJEROS" placeholder="Nº de viajeros" value={numero} onChange={(e) => setNumero(e.currentTarget.value)} errors={error.numero ? [error.numero] : []} />
 
                 <div className='d-flex justify-content-between mt-3'> 
                     <button class='btn btn-sm btn-secondary me-2' type='button' onClick={() => window.history.back()}>Volver Atrás</button>
-                    <button class='btn btn-sm btn-primary' onClick={registerUser}>Añadir viaje</button>
+                    <button class='btn btn-sm btn-primary' onClick={addTravel}>Añadir viaje</button>
                 </div>
             </form>
         </div>
