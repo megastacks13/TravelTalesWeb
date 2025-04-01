@@ -90,7 +90,8 @@ routerViajes.post("/anadir", async (req, res) => {
                     return res.status(401).json({ error: "Ya has creado un viaje con el mismo nombre" });
                 }
             }
-        }
+        }   
+
         const planificacion=false
 
         //Si todo es correcto, creamos un nuevo viaje en la base de datos
@@ -98,10 +99,81 @@ routerViajes.post("/anadir", async (req, res) => {
         await newViajeRef.set({ nombre, ubicacion, fechaIni, fechaFin, num, email, planificacion });
 
         //Devolvemos el viaje que acabamos de añadir con su ID generado automáticamente
-        res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, email } });
+        res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, email, planificacion } });
     } catch {
         //Devolvemos el error 402 si hubo algún problema al insertar el viaje
         res.status(402).json({ error: "Ha habido un error insertando el viaje" });
+    }
+});
+
+//Ruta GET para obtener un viaje específico por su ID
+routerViajes.get("/:id",async(req,res)=>{
+    const id = req.params.id
+    let email=req.infoApiKey.email
+    
+    //Verificamos que el ID obtenido sea válido
+    if(!id){
+        return res.status(400).json({error: "No se ha proporcionado el id del viaje"})
+    }
+    try {
+        //Buscamos los viajes del usuario en la base de datos
+        const snapshot = await viajesRef.orderByChild("email").equalTo(email).once("value");
+        let viajes = undefined
+        if (snapshot.exists()) {
+            viajes = snapshot.val();
+        }
+        
+        if(!viajes)
+            return res.status(500).json({error: "Error del servidor"})
+        let viaje = Object.entries(viajes).find(([key, v]) => key === id && Object.keys(v).length !== 0);
+        if (!viaje)
+            return res.status(404).json({ error: "El viaje no existe" });
+        
+        //Por el contrario si se encuentra, devolvemos los datos del viaje
+        return res.json(viaje[1]);
+    } catch (error) {
+        console.error("Error al obtener el viaje:", error);
+        //Si hubo un error en el servidor, se devuelve un error 500
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
+})
+
+routerViajes.get("/",async(req,res)=>{
+    let email=req.infoApiKey.email
+    try {
+        const snapshot = await viajesRef.orderByChild("email").equalTo(email).once("value");
+        let viajes = undefined
+        if (snapshot.exists()) {
+            viajes = snapshot.val();
+        }
+        return res.json(viajes);
+    } catch (error) {
+        console.error("Error al obtener el viaje:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
+})
+
+routerViajes.post("/:id/anadirPlanificacion", async (req, res) => {
+    const idViaje = req.params.id;
+    let errors = [];
+    if (!db) errors.push('Database error')
+    if (!idViaje) errors.push("No se ha recibido un id de viaje");
+
+    if (errors.length > 0) return res.status(400).json({ errors });
+
+    try {
+        const snapshot = await viajesRef.child(idViaje).once("value");
+    
+        if (!snapshot.exists()) {
+            return res.status(404).json({ error: "No se encontró el viaje con el id proporcionado" });
+        }
+    
+        await viajesRef.child(idViaje).update({ planificacion: true });
+    
+        res.json({ mensaje: "Se ha creado la planificación del viaje." });
+    
+    } catch (error) {
+        res.status(500).json({ error: "Ha ocurrido un error al crear la planificación del viaje", detalle: error.message });
     }
 });
 

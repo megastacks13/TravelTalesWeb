@@ -40,10 +40,11 @@ let ViajeComponent = ()=>{
     };
 
     const anadirPlanificacion = async () => {
-        let response = await fetch(backendUrl+"/viajes/"+id+"/anadirPlanificacion", 
+        let response = await fetch(backendUrl+"/viajes/"+id+"/anadirPlanificacion?apiKey=" + localStorage.getItem("apiKey"), 
             {method: "POST"})
             if(response.ok){
-                navigate("/viajes/"+id)
+                location.reload();
+
 
             }else{
                 let jsonData = await response.json()
@@ -91,11 +92,11 @@ let ViajeComponent = ()=>{
                         </div>
                     </div>
                     <div>
-                        {viaje.planificacion &
+                        {viaje.planificacion &&
                             <p>Planificación creada</p>
                         }
-                        {!viaje.planificacion & 
-                            <button onClick={anadirPlanificacion()}>Añadir Planificación</button>
+                        {!viaje.planificacion && 
+                            <button onClick={anadirPlanificacion}>Añadir Planificación</button>
                         }
                     </div>
                 </div>
