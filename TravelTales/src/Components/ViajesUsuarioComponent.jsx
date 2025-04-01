@@ -29,7 +29,7 @@ let ViajesUsuarioComponent = () => {
             hash = name.charCodeAt(i) + ((hash << 5) - hash);
         }
         const color1 = `hsl(${hash % 360}, 50%, 90%)`; 
-        const color2 = `hsl(${(hash * 2) % 360}, 600%, 85%)`; 
+        const color2 = `hsl(${(hash * 2) % 360}, 60%, 85%)`; 
         return `linear-gradient(to right, ${color1}, ${color2})`;
     };
 

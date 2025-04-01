@@ -29,14 +29,27 @@ let ViajeComponent = ()=>{
         }
     }
 
+    const generarFondoGradiente = (name) => {
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const color1 = `hsl(${hash % 360}, 50%, 90%)`; 
+        const color2 = `hsl(${(hash * 2) % 360}, 60%, 85%)`; 
+        return `linear-gradient(to right, ${color1}, ${color2})`;
+    };
+
     return (
         <div>
             {message&& 
                 <p>{message}</p>
             }
-            <div class="container contenedor-vista-basica">
-                <div class='card'>
-                    <h3 class="card-header nombre-viaje-vista-basica">
+            {
+                Object.entries(viaje).length > 0 && 
+                <div class="container contenedor-vista-basica">
+                <div class='card border-dark'>
+                    <h3 class="card-header nombre-viaje-vista-basica"
+                    style={{ background: generarFondoGradiente(viaje.nombre) }}>
                         {viaje.nombre}
                     </h3>
                     <div class='card-body contenedor-datos-vista-basica'>
@@ -58,6 +71,8 @@ let ViajeComponent = ()=>{
                     </div>
                 </div>
             </div>
+            }
+            
         </div>)
 }
 
