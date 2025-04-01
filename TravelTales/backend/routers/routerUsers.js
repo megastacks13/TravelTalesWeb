@@ -58,19 +58,19 @@ routerUsers.post("/login", async (req, res) => {
 
         res.json({ apiKey, id: user.id, email: user.email });
     } catch{
-        res.status(400).json({ error: "error in login" });
+        res.status(402).json({ error: "Ha habido un error al realizarse el login" });
     }
 });
 
 routerUsers.post("/disconnect", (req, res) => {
     const apiKey = req.query.apiKey;
-    if (!apiKey) return res.status(400).json({ error: "no apiKey" });
+    if (!apiKey) return res.status(400).json({ error: "Falta la apiKey" });
 
     const index = activeApiKeys.indexOf(apiKey);
-    if (index === -1) return res.status(400).json({ error: "apiKey not registered" });
+    if (index === -1) return res.status(400).json({ error: "apiKey no registrada en el servidor" });
 
     activeApiKeys.splice(index, 1);
-    res.json({ message: "apiKey deleted" });
+    res.json({ message: "ApiKey eliminada" });
 });
 
 
