@@ -39,6 +39,27 @@ let ViajeComponent = ()=>{
         return `linear-gradient(to right, ${color1}, ${color2})`;
     };
 
+    const anadirPlanificacion = async () => {
+        let response = await fetch(backendUrl+"/viajes/"+id+"/anadirPlanificacion", 
+            {method: "POST"})
+            if(response.ok){
+                navigate("/viajes/"+id)
+
+            }else{
+                let jsonData = await response.json()
+                let errores=""
+                if(jsonData.errors!=null){
+                    jsonData.errors.array.forEach(e => {
+                        errores+=e+" "
+                    });
+                    setMessage(errores)
+                }else
+                    setMessage(jsonData.error)
+                
+            }
+
+    }
+
     return (
         <div>
             {message&& 
@@ -68,6 +89,14 @@ let ViajeComponent = ()=>{
                                 <p class="item-vista-basica">{viaje.num}</p>
                             </div>
                         </div>
+                    </div>
+                    <div>
+                        {viaje.planificacion &
+                            <p>Planificación creada</p>
+                        }
+                        {!viaje.planificacion & 
+                            <button onClick={anadirPlanificacion()}>Añadir Planificación</button>
+                        }
                     </div>
                 </div>
             </div>

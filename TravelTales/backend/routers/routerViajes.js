@@ -91,10 +91,11 @@ routerViajes.post("/anadir", async (req, res) => {
                 }
             }
         }
+        const planificacion=false
 
         //Si todo es correcto, creamos un nuevo viaje en la base de datos
         const newViajeRef = viajesRef.push();
-        await newViajeRef.set({ nombre, ubicacion, fechaIni, fechaFin, num, email });
+        await newViajeRef.set({ nombre, ubicacion, fechaIni, fechaFin, num, email, planificacion });
 
         //Devolvemos el viaje que acabamos de añadir con su ID generado automáticamente
         res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, email } });

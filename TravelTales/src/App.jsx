@@ -1,7 +1,7 @@
 
 import './App.css';
 import {Routes,Route,Link, useNavigate} from 'react-router-dom'
-import ViajesComponent from './Components/AnadirViajeComponent.jsx';
+import AnadirViajeComponent from './Components/AnadirViajeComponent.jsx';
 import { useEffect, useState } from 'react';
 import LoginUserComponent from './Components/LoginUserComponent';
 import RegisterUserComponent from './Components/RegisterUserComponent';
@@ -59,7 +59,7 @@ function App() {
         <Route path="/inicio" element={<InicioComponent login={login}/>}></Route>
         <Route path="/register" element={<RegisterUserComponent createNotification={createNotification}/>}></Route>
         <Route path="/login" element={<LoginUserComponent setLogin={setLogin}/>}></Route>
-        <Route path="/viajes/anadir" element={<AnadirViajesComponent createNotification={createNotification}/>}></Route>
+        <Route path="/viajes/anadir" element={<AnadirViajeComponent createNotification={createNotification}/>}></Route>
         <Route path="/viajes/buscar" element={<ViajesUsuarioComponent/>}></Route>
         <Route path="/viajes/:id" element={<ViajeComponent/>}></Route>
       </Routes>
