@@ -110,7 +110,7 @@ routerViajes.get("/:id",async(req,res)=>{
     let email=req.infoApiKey.email
     
     //Verificamos que el ID obtenido sea válido
-    if(id==undefined){
+    if(!id){
         return res.status(400).json({error: "No se ha proporcionado el id del viaje"})
     }
     try {
@@ -123,7 +123,7 @@ routerViajes.get("/:id",async(req,res)=>{
         
         if(!viajes)
             return res.status(500).json({error: "Error del servidor"})
-        let viaje = Object.entries(viajes).find(([key, v]) => key === id && v!={});
+        let viaje = Object.entries(viajes).find(([key, v]) => key === id && Object.keys(v).length !== 0);
         if (!viaje)
             return res.status(404).json({ error: "El viaje no existe" });
         
