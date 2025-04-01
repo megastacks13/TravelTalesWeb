@@ -3,11 +3,15 @@ import { backendUrl } from "../Globals";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "../VistaViajeBasico.css"
+
 let ViajeComponent = ()=>{
     let [viaje,setViaje]=useState({})
     let [message,setMessage]=useState("")
     let {id}=useParams()
     let navigate = useNavigate()
+
+    const [alerta, setAlerta] = useState(false);
+
  
     useEffect(()=>{
         getViaje()
@@ -39,13 +43,19 @@ let ViajeComponent = ()=>{
         return `linear-gradient(to right, ${color1}, ${color2})`;
     };
 
+    useEffect(() => {
+        if (localStorage.getItem("planificacionSuccess")) {
+            setAlerta(true); // Show success alert
+            localStorage.removeItem("planificacionSuccess"); // Clean up after showing the alert
+        }
+    }, []);
+
     const anadirPlanificacion = async () => {
         let response = await fetch(backendUrl+"/viajes/"+id+"/anadirPlanificacion?apiKey=" + localStorage.getItem("apiKey"), 
             {method: "POST"})
             if(response.ok){
+                localStorage.setItem("planificacionSuccess", "true"); // Set a flag before reloading
                 location.reload();
-
-
             }else{
                 let jsonData = await response.json()
                 let errores=""
@@ -57,8 +67,7 @@ let ViajeComponent = ()=>{
                 }else
                     setMessage(jsonData.error)
                 
-            }
-
+        }
     }
 
     return (
@@ -92,16 +101,24 @@ let ViajeComponent = ()=>{
                         </div>
                     </div>
                     <div>
-                        {viaje.planificacion &&
-                            <p>Planificación creada</p>
-                        }
                         {!viaje.planificacion && 
-                            <button onClick={anadirPlanificacion}>Añadir Planificación</button>
+                            <button onClick={anadirPlanificacion}>
+                            Añadir Planificación</button>
                         }
                     </div>
                 </div>
             </div>
             }
+            <div>
+            {alerta &&
+                <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                <strong>Planificación creada para el viaje</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close" onClick={()=>{setAlerta(false)}}>
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                    }
+            </div>
             
         </div>)
 }
