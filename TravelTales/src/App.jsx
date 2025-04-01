@@ -1,12 +1,12 @@
 
 import './App.css';
 import {Routes,Route,Link, useNavigate} from 'react-router-dom'
-import ViajesComponent from './Components/ViajesComponent';
+import ViajesComponent from './Components/ViajesComponent.jsx';
 import { useEffect, useState } from 'react';
-import LoginUserComponent from './Components/LoginUserComponent';
-import RegisterUserComponent from './Components/RegisterUserComponent'
-import MenuInicioComponent from './Components/MenuInicioComponent';
-import InicioComponent from './Components/InicioComponent';
+import LoginUserComponent from './Components/LoginUserComponent.jsx';
+import RegisterUserComponent from './Components/RegisterUserComponent.jsx'
+import MenuInicioComponent from './Components/MenuInicioComponent.jsx';
+import InicioComponent from './Components/InicioComponent.jsx';
 
 import NavBarComponent from './Components/NavBarComponent.jsx';
 
