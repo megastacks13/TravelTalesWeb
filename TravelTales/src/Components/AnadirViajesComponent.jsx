@@ -1,5 +1,5 @@
 import { useState,useEffect } from "react";
-import { backendUrl } from "../Globals";
+import { backendUrl } from "../Globals.js";
 import { useNavigate } from "react-router-dom";
 import FormField from "./FormFieldComponent.jsx";
 

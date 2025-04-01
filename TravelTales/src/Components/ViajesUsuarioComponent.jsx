@@ -45,7 +45,7 @@ let ViajesUsuarioComponent = () => {
                             <div key={key} class="col-12 col-md-6 col-lg-4 mb-3">
                                 <div class="card shadow-sm tarjeta-viaje"
                                 style={{ background: generarFondoGradiente(v.nombre) }}
-                                onClick={() => navigate(`/viajes/${key}}`)}>
+                                onClick={() => navigate(`/viajes/${key}`)}>
                                     {/* se podrían añadir imágenes, botones, descripciones, etc */}
                                     <div class="card-body text-center">
                                         <h5 class="card-title">{v.nombre}</h5>
