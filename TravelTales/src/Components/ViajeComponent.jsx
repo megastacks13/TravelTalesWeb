@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { backendUrl } from "../Globals";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import "../VistaViajeBasico.css"
 let ViajeComponent = ()=>{
     let [viaje,setViaje]=useState({})
     let [message,setMessage]=useState("")
@@ -28,21 +29,36 @@ let ViajeComponent = ()=>{
         }
     }
 
-
     return (
-    <div>
-        {message&& 
-            <p>{message}</p>
-        }
-        <h1>{viaje.nombre}</h1>
         <div>
-            <p>Ubicación: {viaje.ubicacion}</p>
-            <p>Fecha de Inicio: {viaje.fechaIni}</p>
-            <p>Fecha de Finalización: {viaje.fechaFin}</p>
-            <p>Número de personas: {viaje.num}</p>
-        </div>
-        
-    </div>)
+            {message&& 
+                <p>{message}</p>
+            }
+            <div class="container contenedor-vista-basica">
+                <div class='card'>
+                    <h3 class="card-header nombre-viaje-vista-basica">
+                        {viaje.nombre}
+                    </h3>
+                    <div class='card-body contenedor-datos-vista-basica'>
+                        <div class="row">
+                            <div class="col-sm-6 conceptos-vista-basica">
+                                <p class="item-vista-basica">Ubicación</p>
+                                <p class="item-vista-basica">Fecha de Inicio</p>
+                                <p class="item-vista-basica">Fecha de Finalización</p>
+                                <p class="item-vista-basica">Número de personas</p>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <p class="item-vista-basica">{viaje.ubicacion}</p>
+                                <p class="item-vista-basica">{viaje.fechaIni}</p>
+                                <p class="item-vista-basica">{viaje.fechaFin}</p>
+                                <p class="item-vista-basica">{viaje.num}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>)
 }
 
 export default ViajeComponent;
