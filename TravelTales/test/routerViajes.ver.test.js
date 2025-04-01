@@ -92,16 +92,19 @@ describe('GET /viajes/:id', () => {
     // Test de casos 400 ------------------------------------------------------------
     //
     it('should return 400 since the id is missing', async () => {
+        // Simulación de la solicitud sin el id en la ruta
         const response = await request(app)
-            .post('/viajes/') // Sin ID en la ruta
-            .set('infoApiKey', JSON.stringify({ email: 'test@example.com' })); // Simulación de autenticación
-        
+            .post('/viajes/anadir') // Sin ID en la ruta
+            .set('infoApiKey', JSON.stringify({ email: 'test@example.com' })) // Simulación de autenticación
+    
+        // Verificamos que la respuesta tenga el status 400
         expect(response.status).toBe(400);
+        // Verificamos que el mensaje de error sea el esperado
         expect(response.body).toHaveProperty('error', 'No se ha proporcionado el id del viaje');
     });
 
     // Test de casos 401 ------------------------------------------------------------
-
+    //Funciona
     it('should return 401 if user not found', async () => {
         const mockSnapshot = {
             exists: jest.fn().mockReturnValue(false),
