@@ -85,4 +85,28 @@ routerViajes.post("/anadir", async (req, res) => {
     }
 });
 
+routerViajes.get("/:id",async(req,res)=>{
+    const id = req.params.id
+    let email=req.infoApiKey.email
+    if(id==undefined){
+        return res.status(400).json({error: "No se ha proporcionadi el id del viaje"})
+    }
+    try {
+        const snapshot = await viajesRef.orderByChild("email").equalTo(email).once("value");
+        let viaje = undefined
+        if (snapshot.exists()) {
+            const viajes = snapshot.val();
+            viaje = Object.entries(viajes).find(([key, v]) => key === id);
+        }
+
+        if (!viaje)
+            return res.status(404).json({ error: "El viaje no existe" });
+
+        return res.json(viaje[1]);
+    } catch (error) {
+        console.error("Error al obtener el viaje:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
+})
+
 export default routerViajes
