@@ -89,20 +89,36 @@ routerViajes.get("/:id",async(req,res)=>{
     const id = req.params.id
     let email=req.infoApiKey.email
     if(id==undefined){
-        return res.status(400).json({error: "No se ha proporcionadi el id del viaje"})
+        return res.status(400).json({error: "No se ha proporcionado el id del viaje"})
     }
     try {
         const snapshot = await viajesRef.orderByChild("email").equalTo(email).once("value");
-        let viaje = undefined
+        let viajes = undefined
         if (snapshot.exists()) {
-            const viajes = snapshot.val();
-            viaje = Object.entries(viajes).find(([key, v]) => key === id);
+            viajes = snapshot.val();
         }
-
+        if(!viajes)
+            return res.status(500).json({error: "Error del servidor"})
+        let viaje = Object.entries(viajes).find(([key, v]) => key === id && v!={});
         if (!viaje)
             return res.status(404).json({ error: "El viaje no existe" });
 
         return res.json(viaje[1]);
+    } catch (error) {
+        console.error("Error al obtener el viaje:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
+})
+
+routerViajes.get("/",async(req,res)=>{
+    let email=req.infoApiKey.email
+    try {
+        const snapshot = await viajesRef.orderByChild("email").equalTo(email).once("value");
+        let viajes = undefined
+        if (snapshot.exists()) {
+            viajes = snapshot.val();
+        }
+        return res.json(viajes);
     } catch (error) {
         console.error("Error al obtener el viaje:", error);
         return res.status(500).json({ error: "Error interno del servidor" });
