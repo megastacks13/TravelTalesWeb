@@ -66,7 +66,7 @@ let ViajesComponent = ( props)=>{
     return (
     <div class='card bg-transparent'>
         <h1 class="card-header">Travel Tales</h1>
-
+        
         <div class='card-body bg-white  carta-registro'>
             <h2 class='card-title'>Añadir viaje</h2>
             <h3>{mensaje}</h3>
