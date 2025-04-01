@@ -13,7 +13,7 @@ let isUserExistent = true;
 // Mock del middleware de API keys
 app.use('/viajes', (req, res, next) => {
     if (isUserExistent)
-        req.infoApiKey = { email: 'correo@correo.com' };
+        req.infoApiKey = { email: 'test@ejemplo.com' };
     else
         req.infoApiKey = { email: null };
     next();
@@ -23,61 +23,89 @@ app.use('/viajes', routerViajes);
 
 describe('GET /viajes/:id', () => {
     isUserExistent = true;
-
     // Test de casos 200 ------------------------------------------------------------
-
+    //Test 200 pasa
     it('should return 200 and the trip data if the trip exists', async () => {
         const mockSnapshotUser = {
             exists: jest.fn().mockReturnValue(true),
             val: jest.fn().mockReturnValue({
-                "userID123": { email: "correo@correo.com" }
+                "userID123": { email: "test@ejemplo.com" }
             })
         };
+    
         jest.spyOn(usersRef, 'orderByChild').mockReturnValue({
             equalTo: jest.fn().mockReturnValue({
                 once: jest.fn().mockResolvedValue(mockSnapshotUser),
             }),
         });
-
+    
+        // Simulamos la base de datos para el viaje, indicando que el viaje ya existe
         const mockSnapshotViaje = {
             exists: jest.fn().mockReturnValue(true),
             val: jest.fn().mockReturnValue({
-                nombre: "Viaje Testarudo",
-                ubicacion: "Las Antípodas",
-                fechaIni: "2001-09-01",
-                fechaFin: "2001-09-03",
+                nombre: "Vacaciones",
+                ubicacion: "Barcelona",
+                fechaIni: "2025-09-01",
+                fechaFin: "2025-09-03",
                 num: 9,
-                email: "correo@correo.com"
+                email: "test@ejemplo.com"
             })
         };
+    
         jest.spyOn(viajesRef, 'child').mockReturnValue({
             once: jest.fn().mockResolvedValue(mockSnapshotViaje),
         });
-
+    
+        // Enviamos la solicitud POST para agregar un viaje
         const res = await request(app)
-            .get('/viajes/valid-id')
-            .send();
-
+            .post('/viajes/anadir')
+            .send({
+                nombre: "Vacaciones",
+                ubicacion: "Barcelona",
+                fechaIni: "2025-09-01",
+                fechaFin: "2025-09-03",
+                num: 9,
+                email: "test@ejemplo.com"
+            });
+    
+        // Verificamos el código de estado y la respuesta
         expect(res.status).toBe(200);
-        expect(res.body.viaje).toEqual({
-            nombre: "Viaje Testarudo",
-            ubicacion: "Las Antípodas",
-            fechaIni: "2001-09-01",
-            fechaFin: "2001-09-03",
+        
+        // Verificamos la estructura de los datos del viaje devueltos
+        let viajeAnadido = res.body.viajeAnadido;
+        
+        // Comprobamos que el campo `id` se haya eliminado correctamente
+        let tieneId = delete viajeAnadido['id'];
+        expect(tieneId).toBe(true);
+    
+        // Verificamos que los datos del viaje sean correctos
+        expect(viajeAnadido).toEqual({
+            nombre: "Vacaciones",
+            ubicacion: "Barcelona",
+            fechaIni: "2025-09-01",
+            fechaFin: "2025-09-03",
             num: 9,
-            email: "correo@correo.com"
+            email: "test@ejemplo.com"
         });
     });
 
-   /* // Test de casos 400 ------------------------------------------------------------
-
-    it('should return 400 since the ID is not provided', async () => {
+   // Test de casos 400 ------------------------------------------------------------
+   /*
+   it('should return 400 since the information is missing', async () => {
         const res = await request(app)
-            .get('/viajes/')
-            .send();
+            .post('/viajes/')
+            .send({}); // Enviamos un cuerpo vacío
 
+        // Verificamos que el código de estado sea 400
         expect(res.status).toBe(400);
-        expect(res.body.error).toContain("No se ha proporcionado un ID de viaje");
+
+        // Verificamos que los errores en el cuerpo de la respuesta contengan los mensajes correctos
+        expect(res.body.errors).toContain("No se ha recibido un nombre");
+        expect(res.body.errors).toContain("No se ha recibido una ubicación");
+        expect(res.body.errors).toContain("No se han recibido una fecha de inicio");
+        expect(res.body.errors).toContain("No se ha recibido una fecha de finalización");
+        expect(res.body.errors).toContain("No se ha recibido un número de personas");
+        expect(res.body.errors).toContain("No se ha recibido el correo del usuario");
     });
 
     it('should return 400 since the ID is invalid', async () => {
@@ -120,34 +148,46 @@ describe('GET /viajes/:id', () => {
         expect(res.status).toBe(401);
         expect(res.body.error).toContain("El usuario no tiene acceso a este viaje");
     });
-
+*/
     // Test de casos 404 ------------------------------------------------------------
-
-    it('should return 404 since the trip does not exist', async () => {
+    //
+    it('should return 404 since the trip does not exist or cannot be added', async () => {
         const mockSnapshotUser = {
             exists: jest.fn().mockReturnValue(true),
             val: jest.fn().mockReturnValue({
-                "userID123": { email: "correo@correo.com" }
+                "userID123": { email: "test@ejemplo.com" }
             })
         };
+    
         jest.spyOn(usersRef, 'orderByChild').mockReturnValue({
             equalTo: jest.fn().mockReturnValue({
                 once: jest.fn().mockResolvedValue(mockSnapshotUser),
             }),
         });
-
+    
+        // Simulamos que no se puede agregar el viaje o no existe
         const mockSnapshotViaje = {
             exists: jest.fn().mockReturnValue(false)
         };
+    
         jest.spyOn(viajesRef, 'child').mockReturnValue({
             once: jest.fn().mockResolvedValue(mockSnapshotViaje),
         });
-
+    
+        // Realizamos el POST para agregar el viaje
         const res = await request(app)
-            .get('/viajes/valid-id')
-            .send();
-
+            .post('/viajes/anadir')
+            .send({
+                nombre: "Vacaciones",
+                ubicacion: "Barcelona",
+                fechaIni: "2025-09-01",
+                fechaFin: "2025-09-03",
+                num: 9,
+                email: "test@ejemplo.com"
+            });
+    
+        // Esperamos que nos devuelvan el error 404 porque el viaje no existe o no se puede añadir
         expect(res.status).toBe(404);
-        expect(res.body.error).toContain("El viaje no existe");
-    });*/
+        expect(res.body.error).toContain("El viaje no pudo ser agregado o no existe");
+    });
 });

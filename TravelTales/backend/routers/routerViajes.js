@@ -118,19 +118,16 @@ routerViajes.get("/:id",async(req,res)=>{
         const snapshot = await viajesRef.orderByChild("email").equalTo(email).once("value");
         let viajes = undefined
         if (snapshot.exists()) {
-<<<<<<< HEAD
             const viajes = snapshot.val();
             //Buscamos el viaje que coincide con el ID
             viaje = Object.entries(viajes).find(([key, v]) => key === id);
         }
         //Si el viaje no se encuentra devolvemos un error 404
-=======
             viajes = snapshot.val();
-        }
+        
         if(!viajes)
             return res.status(500).json({error: "Error del servidor"})
         let viaje = Object.entries(viajes).find(([key, v]) => key === id && v!={});
->>>>>>> b4a0dea3f432f0c14fc63e6f13b8411c7522c36b
         if (!viaje)
             return res.status(404).json({ error: "El viaje no existe" });
         
