@@ -1,0 +1,30 @@
+.container.contenedor-vista-basica{
+    margin-top: 200px;
+    width: 50%;
+}
+
+.conceptos-vista-basica{
+    border-right: dashed black;
+    font-weight: bold;
+}
+
+.item-vista-basica{
+    border-bottom: solid rgba(0, 0, 0, 0.313);
+
+}
+
+.card-body.contenedor-datos-vista-basica{
+    padding: 24px 24px 24px;
+}
+
+@media (max-width: 634px) {
+    .conceptos-vista-basica {
+        border-right: none;
+        border-bottom: dashed black;
+        margin-bottom: 10px; /* Optional: space between label and content */
+    }
+}
+.card-header.nombre-viaje-vista-basica{
+    padding-top: 24px;
+    padding-bottom: 24px;
+}

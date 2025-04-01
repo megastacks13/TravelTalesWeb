@@ -22,11 +22,12 @@ let InicioComponent = (props) =>{
     <div>
       
       <h1 className='titulo-pagina-inicio'>Travel Tales</h1>
-      <nav className='nav-pagina-inicio'>
-        <button onClick={() => navigate("/viajes/anadir")} type="button" class="btn btn-primary btn-lg botones-pagina-inicio">Añadir Viaje</button>
-        <button onClick={() => navigate("/viajes/anadir")} type="button" class="btn btn-primary btn-lg botones-pagina-inicio">Buscar Viajes</button>
-      </nav>
-      
+      {login && 
+        <nav className='nav-pagina-inicio'>
+          <button onClick={() => navigate("/viajes/anadir")} type="button" class="btn btn-primary btn-lg botones-pagina-inicio">Añadir Viaje</button>
+          <button onClick={() => navigate("/viajes/buscar")} type="button" class="btn btn-primary btn-lg botones-pagina-inicio">Buscar Viajes</button>
+        </nav>
+      }
       
     </div>
   )

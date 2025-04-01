@@ -1,0 +1,27 @@
+
+
+@media (max-height: 600px) {
+  .container-misViajes {
+      margin-top: 100px;
+  }
+}
+
+.container-titulo-misViajes{
+  padding-bottom: calc(20px + 1vh);
+}
+
+.tarjeta-viaje{
+  cursor: pointer;
+}
+.container.container-viajes{
+  margin-bottom: 64px;
+}
+.card.tarjeta-viaje{
+  transition: 0.3s;
+  border: solid black;
+  border-radius: 8px;
+}
+.tarjeta-viaje:hover{
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+}
