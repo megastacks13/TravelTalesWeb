@@ -89,45 +89,39 @@ describe('GET /viajes/:id', () => {
         });
     });
 
-   // Test de casos 400 ------------------------------------------------------------
-   
-   it('should return 400 since the information is missing', async () => {
-    const res = await request(app)
-        .post('/viajes/anadir')
-        .send({}); // Enviamos un cuerpo vacío
-
-    // Verificamos que el código de estado sea 400
-    expect(res.status).toBe(400);
-
-    // Verificamos que los errores en el cuerpo de la respuesta contengan los mensajes correctos
-    expect(res.body.errors).toContain("No se ha recibido un nombre");
-    expect(res.body.errors).toContain("No se ha recibido una ubicación");
-    expect(res.body.errors).toContain("No se han recibido una fecha de inicio");
-    expect(res.body.errors).toContain("No se ha recibido una fecha de finalización");
-    expect(res.body.errors).toContain("No se ha recibido un número de personas");
-    expect(res.body.errors).toContain("No se ha recibido el correo del usuario");
-});
-
-it('should return 400 since the ID is invalid', async () => {
-    const res = await request(app)
-        .post('/viajes/invalid-id') 
-        .send();
-
-    expect(res.status).toBe(400);
-    expect(res.body.error).toContain("El ID proporcionado no es válido");
-});
+    // Test de casos 400 ------------------------------------------------------------
+    //
+    it('should return 400 since the id is missing', async () => {
+        const response = await request(app)
+            .post('/viajes/') // Sin ID en la ruta
+            .set('infoApiKey', JSON.stringify({ email: 'test@example.com' })); // Simulación de autenticación
+        
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('error', 'No se ha proporcionado el id del viaje');
+    });
 
     // Test de casos 401 ------------------------------------------------------------
 
-    it('should return 401 since the user does not exist', async () => {
-        isUserExistent = false;
+    it('should return 401 if user not found', async () => {
+        const mockSnapshot = {
+            exists: jest.fn().mockReturnValue(false),
+        };
 
-        const res = await request(app)
-            .post('/viajes/valid-id') 
-            .send();
+        jest.spyOn(usersRef, 'orderByChild').mockReturnValue({
+            equalTo: jest.fn().mockReturnThis(),
+            once: jest.fn().mockResolvedValue(mockSnapshot),
+        });
+
+        const res = await request(app).post('/viajes/anadir').send({
+            nombre: "Viaje Test",
+            ubicacion: "Madrid",
+            fechaIni: "2025-04-01",
+            fechaFin: "2025-04-10",
+            num: 2
+        });
 
         expect(res.status).toBe(401);
-        expect(res.body.error).toContain("No existe un usuario con ese correo");
+        expect(res.body.error).toBe("No existe un usuario con ese correo");
     });
 
     it('should return 401 since the user does not have permission to access the trip', async () => {
@@ -149,45 +143,80 @@ it('should return 400 since the ID is invalid', async () => {
         expect(res.body.error).toContain("El usuario no tiene acceso a este viaje");
     });
     
+    // Test de casos 402 ------------------------------------------------------------
+    //Funciona
+    it('should return 402 if insertion fails', async () => {
+        // Simulamos el método push para que devuelva un objeto con el método set, que falla.
+        jest.spyOn(viajesRef, 'push').mockReturnValue({
+            set: jest.fn().mockImplementation(() => Promise.reject(new Error("Insert error"))),
+            key: 'mockedKey' // Para evitar problemas de referencia
+        });
+    
+        const res = await request(app).post('/viajes/anadir').send({
+            nombre: "Viaje Test",
+            ubicacion: "Madrid",
+            fechaIni: "2025-04-01",
+            fechaFin: "2025-04-10",
+            num: 2
+        });
+    
+        expect(res.status).toBe(402);
+        expect(res.body.error).toBe("Ha habido un error insertando el viaje");
+    });
+
     // Test de casos 404 ------------------------------------------------------------
-    //
-    it('should return 404 since the trip does not exist or cannot be added', async () => {
+    //Funciona
+    it('should return 404 since the trip does not exist', async () => {
+        // Simulamos que el usuario existe en la base de datos
         const mockSnapshotUser = {
             exists: jest.fn().mockReturnValue(true),
             val: jest.fn().mockReturnValue({
                 "userID123": { email: "test@ejemplo.com" }
             })
         };
-
+    
         jest.spyOn(usersRef, 'orderByChild').mockReturnValue({
             equalTo: jest.fn().mockReturnValue({
                 once: jest.fn().mockResolvedValue(mockSnapshotUser),
             }),
         });
-
-        // Simulamos que no se puede agregar el viaje o no existe
+    
+        // Simulamos que el viaje no existe (snapshot.exists() retorna false)
         const mockSnapshotViaje = {
             exists: jest.fn().mockReturnValue(false)
         };
-
+    
         jest.spyOn(viajesRef, 'child').mockReturnValue({
             once: jest.fn().mockResolvedValue(mockSnapshotViaje),
         });
-
-        // Realizamos el POST para agregar el viaje
+    
+        // Realizamos el GET para obtener el viaje
         const res = await request(app)
-            .post('/viajes/anadir')
-            .send({
-                nombre: "Vacaciones",
-                ubicacion: "Barcelona",
-                fechaIni: "2025-09-01",
-                fechaFin: "2025-09-03",
-                num: 9,
-                email: "test@ejemplo.com"
-            });
-
-        // Esperamos que nos devuelvan el error 404 porque el viaje no existe o no se puede añadir
+            .get('/viajes/inexistente') // Usamos un ID que no existe
+            .send();
+    
+        // Verificamos que la respuesta sea 404
         expect(res.status).toBe(404);
-        expect(res.body.error).toContain("El viaje no pudo ser agregado o no existe");
+    
+        // Verificamos que el mensaje de error sea el esperado
+        expect(res.body.error).toContain("El viaje no existe");
+    });
+    
+    // Test de casos 500 ------------------------------------------------------------
+    //Funciona
+    it('should return 500 if the server encounters an error', async () => {
+        const mockSnapshot = {
+            exists: jest.fn().mockReturnValue(false),
+            val: jest.fn().mockReturnValue(null),
+        };
+
+        jest.spyOn(viajesRef, 'orderByChild').mockReturnValue({
+            equalTo: jest.fn().mockReturnThis(),
+            once: jest.fn().mockResolvedValue(mockSnapshot),
+        });
+
+        const res = await request(app).get('/viajes/1234');
+        expect(res.status).toBe(500);
+        expect(res.body.error).toBe("Error del servidor");
     });
 });
