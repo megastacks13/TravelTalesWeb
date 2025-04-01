@@ -10,6 +10,7 @@ let app = express()
 app.use(cors())
 app.use(express.json())
 
+
 app.use(["/viajes"],(req,res,next)=>{
     console.log("Middleware execution")
 
