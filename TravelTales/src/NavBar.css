@@ -5,6 +5,7 @@ a.navbar-brand{
     padding-right: 16px;
     transition: transform 0.5s;
     font-size: 24px;
+    cursor: pointer;
 }
 
 a.navbar-brand:hover{
@@ -13,6 +14,7 @@ a.navbar-brand:hover{
 
 li.nav-item{
     padding: 0 16px 0;
+    cursor: pointer;
 }
 a.nav-link.link-cerrar-sesion{
     padding: 8px;

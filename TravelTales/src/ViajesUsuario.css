@@ -1,5 +1,9 @@
-.container-misViajes {
-  padding-top: calc(20px + 1vh); /* Adjust based on navbar height */
+
+
+@media (max-height: 600px) {
+  .container-misViajes {
+      margin-top: 100px;
+  }
 }
 
 .container-titulo-misViajes{
