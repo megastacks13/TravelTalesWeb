@@ -90,32 +90,32 @@ describe('GET /viajes/:id', () => {
     });
 
    // Test de casos 400 ------------------------------------------------------------
-   /*
+   
    it('should return 400 since the information is missing', async () => {
-        const res = await request(app)
-            .post('/viajes/')
-            .send({}); // Enviamos un cuerpo vacío
+    const res = await request(app)
+        .post('/viajes/anadir')
+        .send({}); // Enviamos un cuerpo vacío
 
-        // Verificamos que el código de estado sea 400
-        expect(res.status).toBe(400);
+    // Verificamos que el código de estado sea 400
+    expect(res.status).toBe(400);
 
-        // Verificamos que los errores en el cuerpo de la respuesta contengan los mensajes correctos
-        expect(res.body.errors).toContain("No se ha recibido un nombre");
-        expect(res.body.errors).toContain("No se ha recibido una ubicación");
-        expect(res.body.errors).toContain("No se han recibido una fecha de inicio");
-        expect(res.body.errors).toContain("No se ha recibido una fecha de finalización");
-        expect(res.body.errors).toContain("No se ha recibido un número de personas");
-        expect(res.body.errors).toContain("No se ha recibido el correo del usuario");
-    });
+    // Verificamos que los errores en el cuerpo de la respuesta contengan los mensajes correctos
+    expect(res.body.errors).toContain("No se ha recibido un nombre");
+    expect(res.body.errors).toContain("No se ha recibido una ubicación");
+    expect(res.body.errors).toContain("No se han recibido una fecha de inicio");
+    expect(res.body.errors).toContain("No se ha recibido una fecha de finalización");
+    expect(res.body.errors).toContain("No se ha recibido un número de personas");
+    expect(res.body.errors).toContain("No se ha recibido el correo del usuario");
+});
 
-    it('should return 400 since the ID is invalid', async () => {
-        const res = await request(app)
-            .get('/viajes/invalid-id')
-            .send();
+it('should return 400 since the ID is invalid', async () => {
+    const res = await request(app)
+        .post('/viajes/invalid-id') 
+        .send();
 
-        expect(res.status).toBe(400);
-        expect(res.body.error).toContain("El ID proporcionado no es válido");
-    });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain("El ID proporcionado no es válido");
+});
 
     // Test de casos 401 ------------------------------------------------------------
 
@@ -123,7 +123,7 @@ describe('GET /viajes/:id', () => {
         isUserExistent = false;
 
         const res = await request(app)
-            .get('/viajes/valid-id')
+            .post('/viajes/valid-id') 
             .send();
 
         expect(res.status).toBe(401);
@@ -142,13 +142,13 @@ describe('GET /viajes/:id', () => {
         });
 
         const res = await request(app)
-            .get('/viajes/valid-id')
+            .post('/viajes/valid-id') 
             .send();
 
         expect(res.status).toBe(401);
         expect(res.body.error).toContain("El usuario no tiene acceso a este viaje");
     });
-*/
+    
     // Test de casos 404 ------------------------------------------------------------
     //
     it('should return 404 since the trip does not exist or cannot be added', async () => {
@@ -158,22 +158,22 @@ describe('GET /viajes/:id', () => {
                 "userID123": { email: "test@ejemplo.com" }
             })
         };
-    
+
         jest.spyOn(usersRef, 'orderByChild').mockReturnValue({
             equalTo: jest.fn().mockReturnValue({
                 once: jest.fn().mockResolvedValue(mockSnapshotUser),
             }),
         });
-    
+
         // Simulamos que no se puede agregar el viaje o no existe
         const mockSnapshotViaje = {
             exists: jest.fn().mockReturnValue(false)
         };
-    
+
         jest.spyOn(viajesRef, 'child').mockReturnValue({
             once: jest.fn().mockResolvedValue(mockSnapshotViaje),
         });
-    
+
         // Realizamos el POST para agregar el viaje
         const res = await request(app)
             .post('/viajes/anadir')
@@ -185,7 +185,7 @@ describe('GET /viajes/:id', () => {
                 num: 9,
                 email: "test@ejemplo.com"
             });
-    
+
         // Esperamos que nos devuelvan el error 404 porque el viaje no existe o no se puede añadir
         expect(res.status).toBe(404);
         expect(res.body.error).toContain("El viaje no pudo ser agregado o no existe");
