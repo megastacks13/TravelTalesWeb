@@ -1,7 +1,3 @@
-import { useEffect, useState } from "react";
-import {backendUrl} from "../Globals.js"
-import { useNavigate } from "react-router-dom";
-import FormField from "./FormFieldComponent.jsx";
 import '../NavBar.css';
 
 let NavBarComponent = (props) =>{
@@ -22,7 +18,7 @@ let NavBarComponent = (props) =>{
                         </li>
                         <div class="vr bg-light"></div>
                         <li class="nav-item">
-                            <a class="nav-link" href="/register">Buscar Viajes</a>
+                            <a class="nav-link" href="/viajes/buscar">Buscar Viajes</a>
                         </li>
                     </ul>
                     

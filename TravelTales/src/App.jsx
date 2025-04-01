@@ -9,6 +9,7 @@ import MenuInicioComponent from './Components/MenuInicioComponent';
 import InicioComponent from './Components/InicioComponent';
 
 import NavBarComponent from './Components/NavBarComponent.jsx';
+import ViajesUsuarioComponent from './Components/ViajesUsuarioComponent.jsx';
 
 function App() {
 
@@ -59,6 +60,7 @@ function App() {
         <Route path="/register" element={<RegisterUserComponent createNotification={createNotification}/>}></Route>
         <Route path="/login" element={<LoginUserComponent setLogin={setLogin}/>}></Route>
         <Route path="/viajes/anadir" element={<ViajesComponent createNotification={createNotification}/>}></Route>
+        <Route path="/viajes/buscar" element={<ViajesUsuarioComponent/>}></Route>
       </Routes>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     </div>
