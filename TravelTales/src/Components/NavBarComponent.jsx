@@ -20,7 +20,7 @@ let NavBarComponent = (props) =>{
                         </li>
                         <div class="vr bg-light"></div>
                         <li class="nav-item">
-                            <a class="nav-link" onClick={() => navigate("/viajes/buscar")}>Ver Viajes</a>
+                            <a class="nav-link" onClick={() => navigate("/viajes/buscar")}>Buscar Viajes</a>
                         </li>
                     </ul>
                     
