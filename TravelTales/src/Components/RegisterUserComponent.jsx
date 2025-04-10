@@ -47,7 +47,7 @@ let RegisterUserComponent = (props) =>{
         if(contrasena2 == "" )
             errores.contrasena2= "El campo 'repetir contraseña' debe tener un valor"
         if(contrasena!=null&&contrasena2!=null&&contrasena2!==contrasena )
-            errores.coincidir= "Las dos contraseñas deben coindicir"
+            errores.coincidir= "Las dos contraseñas deben coincidir"
         setError(errores)
     }
     let registerUser = async(event) =>{
@@ -99,7 +99,7 @@ let RegisterUserComponent = (props) =>{
 
                     <div className='d-flex justify-content-between mt-3'> 
                         <button class='btn btn-sm btn-secondary me-2' type='button' onClick={() => window.history.back()}>Volver Atrás</button>
-                        <button class='btn btn-sm btn-primary' onClick={registerUser}>Crear Cuenta</button>
+                        <button class='btn btn-sm btn-primary' type='submit' onClick={registerUser}>Crear Cuenta</button>
                     </div>
                 </form>
             </div>

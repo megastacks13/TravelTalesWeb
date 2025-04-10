@@ -27,16 +27,16 @@ function App() {
   }
   useEffect(()=>{
     checkIfLogin()
-  },
-  [])
+  },[])
 
   let checkIfLogin = () =>{
-    if(localStorage.getItem("apiKey")!=null){
-      setLogin(true)
-    }else{
+    if (localStorage.getItem('apiKey') == null)
       setLogin(false)
+    else{
+      setLogin(true)
     }
   }
+
 
   let disconnect = () =>{
     localStorage.removeItem("apiKey")
@@ -47,16 +47,16 @@ function App() {
   return (
     
     <div className="App">
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"></link>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"></link> 
       {login && <NavBarComponent disconnect={disconnect}/>}
-  
+      {console.log(login)}
       {notification!="" && (
         <div className='notification'>      {notification}
           <span className='close-btn' onClick={()=>{setNotification("")}}>X</span>
         </div>
       )}
       <Routes>
-        <Route path="/" element={<MenuInicioComponent/>}></Route>
+        <Route path="/" element={<MenuInicioComponent login={login}/>}></Route>
         <Route path="/inicio" element={<InicioComponent login={login}/>}></Route>
         <Route path="/register" element={<RegisterUserComponent createNotification={createNotification}/>}></Route>
         <Route path="/login" element={<LoginUserComponent setLogin={setLogin}/>}></Route>

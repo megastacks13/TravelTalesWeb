@@ -10,7 +10,7 @@ let InicioComponent = (props) =>{
 
   useEffect(()=>{
     checkLogin();
-  },[])
+  })
 
   let checkLogin = () => {
     if(!login)
