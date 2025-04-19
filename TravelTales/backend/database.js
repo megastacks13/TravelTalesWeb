@@ -1,18 +1,26 @@
-import admin from 'firebase-admin'
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
+import 'dotenv/config'; // Load .env file into process.env
+import admin from 'firebase-admin';
 
-const credenciales = require("./credenciales.json"); // Ajusta la ruta si es necesario
+const credencialesData = process.env.FIREBASE_CREDENTIALS; // Now using process.env
+const urlFirebase = process.env.FIREBASE_URL;
 
+if (!credencialesData) {
+    throw new Error("Las credenciales de Firebase no están definidas en las variables de entorno.");
+}
 
+if (!urlFirebase) {
+  throw new Error("La URL no existe");
+}
+
+const credenciales = JSON.parse(credencialesData); 
 
 admin.initializeApp({
     credential: admin.credential.cert(credenciales), 
-    databaseURL: "https://traveltales-1653b-default-rtdb.europe-west1.firebasedatabase.app"
-  });
+    databaseURL: urlFirebase
+});
   
 const db = admin.database();
 const usersRef = db.ref("users"); 
 const viajesRef = db.ref("viajes"); 
   
-export default {db , usersRef, viajesRef}
+export default { db, usersRef, viajesRef };

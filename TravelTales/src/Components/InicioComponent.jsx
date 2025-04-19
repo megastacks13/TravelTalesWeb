@@ -24,7 +24,7 @@ let InicioComponent = (props) =>{
       {login && 
         <nav className='nav-pagina-inicio'>
           <button onClick={() => navigate("/viajes/anadir")} type="button" class="btn btn-primary btn-lg botones-pagina-inicio">Añadir Viaje</button>
-          <button onClick={() => navigate("/viajes/anadir")} type="button" class="btn btn-primary btn-lg botones-pagina-inicio">Buscar Viajes</button>
+          <button onClick={() => navigate("/viajes/buscar")} type="button" class="btn btn-primary btn-lg botones-pagina-inicio">Buscar Viajes</button>
         </nav>
       }
       

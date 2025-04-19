@@ -1,2 +1,2 @@
-export let backendUrl = "http://localhost:4006"
+export let backendUrl = "https://traveltalesweb-production.up.railway.app"
 
