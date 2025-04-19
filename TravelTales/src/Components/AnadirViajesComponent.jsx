@@ -52,7 +52,7 @@ let ViajesComponent = ( props)=>{
                 let jsonData = await response.json()
                 let errores=""
                 if(jsonData.errors!=null){
-                    jsonData.errors.array.forEach(e => {
+                    jsonData.errors.forEach(e => {
                         errores+=e+" "
                     });
                     setMensaje(errores)
@@ -69,7 +69,7 @@ let ViajesComponent = ( props)=>{
         
         <div class='card-body bg-white  carta-registro'>
             <h2 class='card-title'>Añadir viaje</h2>
-            <h3>{mensaje}</h3>
+            <h3 class="errorMessage">{mensaje}</h3>
             <form>
                 <FormField id="nombre" label="NOMBRE" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.currentTarget.value)} errors={error.nombre ? [error.nombre] : []} />
                 <FormField id="ubicacion" label="UBICACIÓN" placeholder="Ubicación" value={ubicacion} onChange={(e) => setUbicacion(e.currentTarget.value)} errors={error.ubicacion ? [error.ubicacion] : []} />

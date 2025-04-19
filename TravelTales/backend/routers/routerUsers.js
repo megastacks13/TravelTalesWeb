@@ -23,9 +23,9 @@ routerUsers.post("/register", async (req, res) => {
         }
 
         const newUserRef = usersRef.push();
-        await newUserRef.set({ email, nombre, contrasena });
+        await newUserRef.set({ email, nombre, apellidos,contrasena });
 
-        res.json({ insertedUser: { id: newUserRef.key, email, nombre } });
+        res.json({ insertedUser: { id: newUserRef.key, email, nombre, apellidos } });
     } catch {
         res.status(402).json({ error: "Ha habido un error insertando el usuario" });
     }
