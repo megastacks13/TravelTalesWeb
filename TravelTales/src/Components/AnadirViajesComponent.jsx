@@ -27,14 +27,16 @@ let ViajesComponent = ( props)=>{
             errores.ubicacion= "El campo 'ubicación' debe tener un valor";
         if (!Number.isInteger(Number(numero)) || Number(numero) < 1)
             errores.numero = "El número de personas debe ser un número entero mayor o igual a 1";
+        if (fechaIni > fechaFin)
+            errores.fechas = "La fecha inicial debe ser menor o igual que la fecha final";
         setError(errores);
     }
 
-    let addTravel = async(event) =>{
+    let addTravel = async(event) => {
         event.preventDefault();
-        if (Object.keys(error).length > 0){
+        if (Object.keys(error).length > 0) {
             createNotification("No debe haber errores para poder añadir un viaje")
-        }else{
+        } else {
             let response = await fetch(backendUrl+"/viajes/anadir?apiKey="+localStorage.getItem("apiKey"), 
             {method: "POST",
                 headers: {"Content-Type":"application/json"},
@@ -79,7 +81,7 @@ let ViajesComponent = ( props)=>{
                     label="FECHA DE INICIO" 
                     type="date" 
                     value={fechaIni} 
-                    onChange={(e) => setFechaIni(e.currentTarget.value)}
+                    onChange={(e) => setFechaIni(e.currentTarget.value)} errors={error.fechas ? [error.fechas] : []}
                     placeholder='yyyy/mm/dd' 
                 />
 
@@ -88,7 +90,7 @@ let ViajesComponent = ( props)=>{
                     label="FECHA DE FINALIZACIÓN" 
                     type="date" 
                     value={fechaFin} 
-                    onChange={(e) => setFechaFin(e.currentTarget.value)} 
+                    onChange={(e) => setFechaFin(e.currentTarget.value)} errors={error.fechas ? [error.fechas] : []}
                     placeholder='yyyy/mm/dd'
                 />
 
