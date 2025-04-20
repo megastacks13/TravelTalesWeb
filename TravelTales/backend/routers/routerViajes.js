@@ -2,6 +2,28 @@ import express from 'express'
 let routerViajes = express.Router()
 import database from "../database.js";
 const { db, usersRef, viajesRef } = database;
+import jwt from 'jsonwebtoken'
+import activeApiKeys from '../activeApiKeys.js'
+
+routerViajes.use((req,res,next)=>{
+    let apiKey = req.query.apiKey
+
+    if(apiKey==undefined)
+        return res.status(405).json({error:"No apiKey"})
+    let infoApiKey=null
+    try{
+        infoApiKey=jwt.verify(apiKey,"secret")
+    }catch{
+        return res.status(405).json({error:"invalid apiKey"})
+    }
+    
+
+    if(infoApiKey==undefined||activeApiKeys.indexOf(apiKey)==-1)
+        return res.status(405).json({error:"invalid apiKey"})
+
+    req.infoApiKey=infoApiKey
+    next()
+})
 
 //Ruta POST para añadir un viaje nuevo
 routerViajes.post("/anadir", async (req, res) => {
@@ -17,9 +39,7 @@ routerViajes.post("/anadir", async (req, res) => {
     if (!fechaIni) errors.push("No se han recibido una fecha de inicio");
     if (!fechaFin) errors.push("No se han recibido una fecha de finalización");
     if (!num) errors.push("No se ha recibido un número de personas");
-    
-    //Obtenemos el email a partir del infoApiKey
-    let email=req.infoApiKey.email
+    let email = req.infoApiKey?.email ?? null;
     if (email == null) errors.push("No se ha recibido el correo del usuario");
 
     //Expresión para convertir la fecha en un objeto de tipo DATE
@@ -67,8 +87,6 @@ routerViajes.post("/anadir", async (req, res) => {
         errors.push("La ubicación debe comenzar con una letra, tener al menos 3 caracteres y solo contener letras, números y caracteres especiales (.,/ -).");
     }
 
-    //Si hay errores devolvemos código 400 junto a los errores
-    console.log(errors)
     if (errors.length > 0) return res.status(400).json({ errors });
 
     //En otro caso intentamos guaradar el nuevo viaje
@@ -77,11 +95,8 @@ routerViajes.post("/anadir", async (req, res) => {
         const snapshot2 = await usersRef.orderByChild("email").equalTo(email).once("value");
         if (!snapshot2.exists()) {
             return res.status(401).json({ error: "No existe un usuario con ese correo" });
-        } 
-        else
-        {
-            //Verificamos si el usuario ya tiene un viaje con ese nombre
-            const snapshot = await viajesRef.orderByChild("correoUser").equalTo(email).once("value");
+        }else{
+            const snapshot = await viajesRef.orderByChild("email").equalTo(email).once("value");
             if (snapshot.exists()) {
                 const viajes = snapshot.val();
                 const viajeConMismoNombre = Object.values(viajes).find(viaje => viaje.nombre === nombre);

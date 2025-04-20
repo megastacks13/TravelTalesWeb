@@ -2,155 +2,246 @@ import request from 'supertest';
 import { describe, it, expect, jest } from '@jest/globals';
 import express from 'express';
 import routerViajes from '../backend/routers/routerViajes.js';
+import routerUsers from '../backend/routers/routerUsers.js';
 import database from '../backend/database.js';
 const { usersRef, viajesRef } = database;
 
 const app = express();
 app.use(express.json());
 app.use('/viajes', routerViajes);
+app.use('/users', routerUsers);
 
 describe('POST /anadir', () => {
-    //Test para comprobar la correcta adición de un viaje 
-    //Codigo 200 (se añade correctamente)
-    it('debe añadir un viaje con datos válidos', async () => {
-      const nuevoViaje = {
-        nombre: 'Vacaciones',
-        ubicacion: 'Madrid',
-        fechaIni: '2025-08-01',
-        fechaFin: '2025-08-10',
-        num: 3,
-        email: 'jteso@gmail.com'
-      };
+  // Errores:
+  // 400 -> Cosas variadas
+  // 401 -> Usuario inexistente o viaje de nombre repetido
+  // 402 -> Error inserccion
+  // 200 -> Viaje insertado
+  it('Integración: should return 400 for missing data', async() =>{
+    const newTrip = {}
+
+    const newUser = {
+          nombre: 'UserDeMiIntergasion',
+          apellidos: 'apellTestUser',
+          email: 'test@exampleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.com',
+          contrasena: 'Pwvalida1_'
+    };
+    
+    const registerResponse = await request(app)
+      .post('/users/register')
+      .send(newUser);
+
+    expect(registerResponse.status).toBe(200)
+
+    const loginResponse = await request(app)
+        .post('/users/login')
+        .send({email:newUser.email, contrasena:newUser.contrasena})
+
+    expect(loginResponse.status).toBe(200)
+      
+    const apiKey = loginResponse.body.apiKey
+
+    const res = await request(app)
+                .post('/viajes/anadir?apiKey='+apiKey)
+                .send(newTrip)
+
+    expect(res.status).toBe(400)
+    expect(res.body.errors).toContain("No se ha recibido un nombre");
+    expect(res.body.errors).toContain("No se ha recibido una ubicación");
+    expect(res.body.errors).toContain("No se han recibido una fecha de inicio");
+    expect(res.body.errors).toContain("No se han recibido una fecha de finalización");
+    expect(res.body.errors).toContain("No se ha recibido un número de personas");
+
+    // Limpieza de la bd
+    const userKey = loginResponse.body.id
+    await usersRef.child(userKey).remove();
+  })
+
+  it('Integración: should return 400 for wrong date format', async() =>{
+    const newTrip = {nombre:"Viaje Integracionoso", ubicacion:"Las Antípodas", fechaIni:"01/01/2001", fechaFin:"2002/02/02", num:9}
+
+    const newUser = {
+          nombre: 'UserDeMiIntergasion',
+          apellidos: 'apellTestUser',
+          email: 'test@exampleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.com',
+          contrasena: 'Pwvalida1_'
+    };
+    
+    const registerResponse = await request(app)
+      .post('/users/register')
+      .send(newUser);
+
+    expect(registerResponse.status).toBe(200)
+
+    const loginResponse = await request(app)
+        .post('/users/login')
+        .send({email:newUser.email, contrasena:newUser.contrasena})
+
+    expect(loginResponse.status).toBe(200)
+      
+    const apiKey = loginResponse.body.apiKey
+
+    const res = await request(app)
+                .post('/viajes/anadir?apiKey='+apiKey)
+                .send(newTrip)
+
+    expect(res.status).toBe(400)
+    expect(res.body.errors).toContain("La fecha de inicio no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
+    expect(res.body.errors).toContain("La fecha de finalización no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
+    const userKey = loginResponse.body.id
+    await usersRef.child(userKey).remove();
+  })
+
+  it('Integración: should return 400 for wrong date input', async() =>{
+    const newTrip = {nombre:"Viaje Integracionoso", ubicacion:"Las Antípodas", fechaIni:"2001-99-01", fechaFin:"2002-02-99", num:9}
+
+    const newUser = {
+          nombre: 'UserDeMiIntergasion',
+          apellidos: 'apellTestUser',
+          email: 'test@exampleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.com',
+          contrasena: 'Pwvalida1_'
+    };
+    
+    const registerResponse = await request(app)
+      .post('/users/register')
+      .send(newUser);
+
+    expect(registerResponse.status).toBe(200)
+
+    const loginResponse = await request(app)
+        .post('/users/login')
+        .send({email:newUser.email, contrasena:newUser.contrasena})
+
+    expect(loginResponse.status).toBe(200)
+      
+    const apiKey = loginResponse.body.apiKey
+
+    const res = await request(app)
+                .post('/viajes/anadir?apiKey='+apiKey)
+                .send(newTrip)
+
+    expect(res.status).toBe(400)
+    expect(res.body.errors).toContain("La fecha de inicio no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
+    expect(res.body.errors).toContain("La fecha de finalización no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
+    const userKey = loginResponse.body.id
+    await usersRef.child(userKey).remove();
+  })
+
+  it('Integración: should return 400 for interchaged date order', async() =>{
+    const newTrip = {nombre:"Viaje Integracionoso", ubicacion:"Las Antípodas", fechaIni:"2002-01-01", fechaFin:"2001-01-01", num:9}
+
+    const newUser = {
+          nombre: 'UserDeMiIntergasion',
+          apellidos: 'apellTestUser',
+          email: 'test@exampleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.com',
+          contrasena: 'Pwvalida1_'
+    };
+    
+    const registerResponse = await request(app)
+      .post('/users/register')
+      .send(newUser);
+
+    expect(registerResponse.status).toBe(200)
+
+    const loginResponse = await request(app)
+        .post('/users/login')
+        .send({email:newUser.email, contrasena:newUser.contrasena})
+
+    expect(loginResponse.status).toBe(200)
+      
+    const apiKey = loginResponse.body.apiKey
+
+    const res = await request(app)
+                .post('/viajes/anadir?apiKey='+apiKey)
+                .send(newTrip)
+
+    expect(res.status).toBe(400)
+    expect(res.body.errors).toContain("La fecha de finalización debe ser posterior a la fecha de inicio");
+    const userKey = loginResponse.body.id
+    await usersRef.child(userKey).remove();
+  })
   
-      const response = await request(app)
-        .post('/viajes/anadir')
-        .send(nuevoViaje);
-  
-      expect(response.status).toBe(200); //Codigo exitoso
-      expect(response.body.viajeAnadido).toHaveProperty('id');
-      expect(response.body.viajeAnadido.nombre).toBe(nuevoViaje.nombre);
-      expect(response.body.viajeAnadido.ubicacion).toBe(nuevoViaje.ubicacion);
-  
-      // Verificar que el viaje esté en la base de datos
-      const snapshot = await viajesRef.orderByChild('nombre').equalTo(nuevoViaje.nombre).once('value');
-      expect(snapshot.exists()).toBe(true);
-  
-      // Limpieza de la BD
-      const viajeKey = Object.keys(snapshot.val())[0];
-      await viajesRef.child(viajeKey).remove();
-    });
+  // ---- 401
+  it('Integración: should return 401 for repeated trip name', async() =>{
+    const newTrip = {nombre:"Viaje Integracionoso", ubicacion:"Las Antípodas", fechaIni:"2001-01-01", fechaFin:"2002-02-02", num:9}
 
-  //Tests con el código de error 400 - Correspondiente a datos inválidos
-    //Si falta algún campo
-    it('debe devolver un error si faltan campos requeridos', async () => {
-        const nuevoViaje = {
-          ubicacion: 'Madrid',
-          fechaIni: '2025-08-01',
-          fechaFin: '2025-08-10',
-          num: 3,
-          email: 'jteso@gmail.com'
-        }; //En este caso falta un nombre y debería devolver un error
-     
-        const response = await request(app)
-          .post('/viajes/anadir')
-          .send(nuevoViaje);
-     
-        expect(response.status).toBe(400); // Asumiendo que el servidor devuelve un 400 para datos inválidos
-        expect(response.body.error).toBe('El nombre es requerido');
-    });
+    const newUser = {
+          nombre: 'UserDeMiIntergasion',
+          apellidos: 'apellTestUser',
+          email: 'test@exampleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.com',
+          contrasena: 'Pwvalida1_'
+    };
+    
+    const registerResponse = await request(app)
+      .post('/users/register')
+      .send(newUser);
 
-    //Fecha Inválida
-    it('debe devolver un error si la fecha es inválida', async () => {
-      const nuevoViaje = {
-          nombre: 'ViajeErroneo',
-          ubicacion: 'Barcelona',
-          fechaIni: '00/00/0000',
-          fechaFin: '2025-08-10',
-          num: 3,
-          email: 'jteso@gmail.com'
-      };
+    expect(registerResponse.status).toBe(200)
 
-      const response = await request(app)
-          .post('/viajes/anadir')
-          .send(nuevoViaje);
+    const loginResponse = await request(app)
+        .post('/users/login')
+        .send({email:newUser.email, contrasena:newUser.contrasena})
 
-      expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Fecha inválida');
-    });
+    expect(loginResponse.status).toBe(200)
+      
+    const apiKey = loginResponse.body.apiKey
 
-    //Si número de personas no es correcto (0)
-    it('debe devolver un error si el número de personas es 0 o menor', async () => {
-      const nuevoViaje = {
-          nombre: 'ViajeCero',
-          ubicacion: 'Valencia',
-          fechaIni: '2025-08-01',
-          fechaFin: '2025-08-10',
-          num: 0,
-          email: 'jteso@gmail.com'
-      };
+    const res = await request(app)
+                .post('/viajes/anadir?apiKey='+apiKey)
+                .send(newTrip)
 
-      const response = await request(app)
-          .post('/viajes/anadir')
-          .send(nuevoViaje);
+    expect(res.status).toBe(200)
 
-      expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Número de personas inválido');
-    });
+    // Añadimos de nuevo
+    const res2 = await request(app)
+                .post('/viajes/anadir?apiKey='+apiKey)
+                .send(newTrip)
 
-    //Si numero de personas no es correcto (k)
-    it('debe devolver un error si el número de personas no es un entero positivo', async () => {
-      const nuevoViaje = {
-          nombre: 'ViajeK',
-          ubicacion: 'Sevilla',
-          fechaIni: '2025-08-01',
-          fechaFin: '2025-08-10',
-          num: 'k',
-          email: 'jteso@gmail.com'
-      };
+    expect(res2.status).toBe(401)
+    expect(res2.body.error).toContain("Ya has creado un viaje con el mismo nombre");
 
-      const response = await request(app)
-          .post('/viajes/anadir')
-          .send(nuevoViaje);
+    // Limpieza de la bd
+    const userKey = loginResponse.body.id
+    await usersRef.child(userKey).remove(); 
+    const tripKey = res.body.viajeAnadido.id
+    await viajesRef.child(tripKey).remove();
+  })
 
-      expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Número de personas debe ser un entero positivo');
-    });
+  // --- 200
+  it('Integración: should return 200', async() =>{
+    const newTrip = {nombre:"Viaje Integracionoso", ubicacion:"Las Antípodas", fechaIni:"2001-01-01", fechaFin:"2002-02-02", num:9}
 
-    it('debe devolver un error si la fecha de inicio es posterior a la fecha de fin', async () => {
-      const nuevoViaje = {
-        nombre: 'Vacaciones',
-        ubicacion: 'Madrid',
-        fechaIni: '2025-08-10',
-        fechaFin: '2025-08-01', // Fecha de fin antes que la de inicio
-        num: 3,
-        email: 'jteso@gmail.com'
-      };
-   
-      const response = await request(app)
-        .post('/viajes/anadir')
-        .send(nuevoViaje);
-   
-      expect(response.status).toBe(400);
-      expect(response.body.error).toBe('La fecha de inicio no puede ser posterior a la de fin');
-   });
+    const newUser = {
+          nombre: 'UserDeMiIntergasion',
+          apellidos: 'apellTestUser',
+          email: 'test@exampleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.com',
+          contrasena: 'Pwvalida1_'
+    };
+    
+    const registerResponse = await request(app)
+      .post('/users/register')
+      .send(newUser);
 
-//Test código de error 401 - Correspondiente al error de autenticación
-    it('debe devolver un error si el correo electrónico no está registrado', async () => {
-        const nuevoViaje = {
-          nombre: 'Vacaciones',
-          ubicacion: 'Madrid',
-          fechaIni: '2025-08-01',
-          fechaFin: '2025-08-10',
-          num: 3,
-          email: 'correoNoRegistrado@gmail.com' // Un correo que no esté registrado
-        };
-     
-        const response = await request(app)
-          .post('/viajes/anadir')
-          .send(nuevoViaje);
-     
-        expect(response.status).toBe(401); //Error para el correo no registrad0
-        expect(response.body.error).toBe('Correo electrónico no registrado');
-     });
+    expect(registerResponse.status).toBe(200)
 
+    const loginResponse = await request(app)
+        .post('/users/login')
+        .send({email:newUser.email, contrasena:newUser.contrasena})
+
+    expect(loginResponse.status).toBe(200)
+      
+    const apiKey = loginResponse.body.apiKey
+
+    const res = await request(app)
+                .post('/viajes/anadir?apiKey='+apiKey)
+                .send(newTrip)
+
+    expect(res.status).toBe(200)
+
+    // Limpieza de la bd
+    const userKey = loginResponse.body.id
+    await usersRef.child(userKey).remove(); 
+    const tripKey = res.body.viajeAnadido.id
+    await viajesRef.child(tripKey).remove();
+  })
 });
