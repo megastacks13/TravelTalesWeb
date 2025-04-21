@@ -193,7 +193,9 @@ routerViajes.post("/:id/anadirPlanificacion", async (req, res) => {
 
 routerViajes.post("/:id/anadirBlog", async (req, res) => {
     const { idViaje } = req.query;
+    //Lista para almacenar distintos errores
     let errors = [];
+
     if (!db) errors.push('Database error')
     if (!idViaje) errors.push("No se ha recibido un id de viaje");
 
@@ -211,7 +213,10 @@ routerViajes.post("/:id/anadirBlog", async (req, res) => {
         res.json({ mensaje: "Se ha creado el blog del viaje." });
     
     } catch (error) {
-        res.status(500).json({ error: "Ha ocurrido un error al crear el blog del viaje", detalle: error.message });
+        res.status(500).json({ 
+            error: "Ha ocurrido un error al crear el blog del viaje", 
+            detalle: error.message 
+        });
     }
 });
 
