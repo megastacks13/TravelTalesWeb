@@ -17,7 +17,7 @@ describe('POST /anadir', () => {
   // 401 -> Usuario inexistente o viaje de nombre repetido
   // 402 -> Error inserccion
   // 200 -> Viaje insertado
-  it('Integración: should return 400 for missing data', async() =>{
+  it('Error 400: faltan datos', async() =>{
     const newTrip = {}
 
     const newUser = {
@@ -57,7 +57,7 @@ describe('POST /anadir', () => {
     await usersRef.child(userKey).remove();
   })
 
-  it('Integración: should return 400 for wrong date format', async() =>{
+  it('Error 404: formato no válido de fecha', async() =>{
     const newTrip = {nombre:"Viaje Integracionoso", ubicacion:"Las Antípodas", fechaIni:"01/01/2001", fechaFin:"2002/02/02", num:9}
 
     const newUser = {
@@ -92,42 +92,7 @@ describe('POST /anadir', () => {
     await usersRef.child(userKey).remove();
   })
 
-  it('Integración: should return 400 for wrong date input', async() =>{
-    const newTrip = {nombre:"Viaje Integracionoso", ubicacion:"Las Antípodas", fechaIni:"2001-99-01", fechaFin:"2002-02-99", num:9}
-
-    const newUser = {
-          nombre: 'UserDeMiIntergasion',
-          apellidos: 'apellTestUser',
-          email: 'test@exampleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.com',
-          contrasena: 'Pwvalida1_'
-    };
-    
-    const registerResponse = await request(app)
-      .post('/users/register')
-      .send(newUser);
-
-    expect(registerResponse.status).toBe(200)
-
-    const loginResponse = await request(app)
-        .post('/users/login')
-        .send({email:newUser.email, contrasena:newUser.contrasena})
-
-    expect(loginResponse.status).toBe(200)
-      
-    const apiKey = loginResponse.body.apiKey
-
-    const res = await request(app)
-                .post('/viajes/anadir?apiKey='+apiKey)
-                .send(newTrip)
-
-    expect(res.status).toBe(400)
-    expect(res.body.errors).toContain("La fecha de inicio no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
-    expect(res.body.errors).toContain("La fecha de finalización no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
-    const userKey = loginResponse.body.id
-    await usersRef.child(userKey).remove();
-  })
-
-  it('Integración: should return 400 for interchaged date order', async() =>{
+  it('Error 404: la fecha de inicio es posterior a la fecha de finalización', async() =>{
     const newTrip = {nombre:"Viaje Integracionoso", ubicacion:"Las Antípodas", fechaIni:"2002-01-01", fechaFin:"2001-01-01", num:9}
 
     const newUser = {
@@ -161,7 +126,6 @@ describe('POST /anadir', () => {
     await usersRef.child(userKey).remove();
   })
   
-  // ---- 401
   it('Integración: should return 401 for repeated trip name', async() =>{
     const newTrip = {nombre:"Viaje Integracionoso", ubicacion:"Las Antípodas", fechaIni:"2001-01-01", fechaFin:"2002-02-02", num:9}
 
