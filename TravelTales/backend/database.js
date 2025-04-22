@@ -1,26 +1,41 @@
-import 'dotenv/config'; // Load .env file into process.env
+// backend/database.js
 import admin from 'firebase-admin';
+import dotenv from 'dotenv';
+import 'dotenv/config';   //  .env
+//import admin from 'firebase-admin';
 
-const credencialesData = process.env.FIREBASE_CREDENTIALS; // Now using process.env
-const urlFirebase = process.env.FIREBASE_URL;
 
-if (!credencialesData) {
-    throw new Error("Las credenciales de Firebase no están definidas en las variables de entorno.");
+dotenv.config();
+
+// Asegurarnos de que la variable existe
+if (!process.env.FIREBASE_CREDENTIALS) {
+  throw new Error('FIREBASE_CREDENTIALS no está definido en el .env');
 }
 
-if (!urlFirebase) {
-  throw new Error("La URL no existe");
+let serviceAccount;
+try {
+  // Parseamos el string JSON
+  serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
+} catch (e) {
+  throw new Error('FIREBASE_CREDENTIALS no es un JSON válido: ' + e.message);
 }
 
-const credenciales = JSON.parse(credencialesData); 
+// URL de tu RTDB desde el .env
+const databaseURL = process.env.FIREBASE_URL;
+if (!databaseURL) {
+  throw new Error('FIREBASE_URL no está definido en el .env');
+}
 
+// Inicializamos la app de Firebase Admin
 admin.initializeApp({
-    credential: admin.credential.cert(credenciales), 
-    databaseURL: urlFirebase
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL,
 });
-  
+
+// Exportamos referencias útiles
 const db = admin.database();
-const usersRef = db.ref("users"); 
-const viajesRef = db.ref("viajes"); 
-  
-export default { db, usersRef, viajesRef };
+const usersRef  = db.ref('users');
+const viajesRef = db.ref('viajes');
+const blogsRef  = db.ref('blogs');  // si lo usas
+
+export default { db, usersRef, viajesRef, blogsRef };
