@@ -199,14 +199,14 @@ routerViajes.post("/:id/anadirBlog", async (req, res) => {
     if (!idViaje) errors.push("No se ha recibido un id de viaje");
 
     if (errors.length > 0) {
-        return res.status(400).json({ errors });
+        return res.status(MISSING_ARGUMENT_ERROR).json({ errors });
     }
 
     try {
         const snapshot = await viajesRef.child(idViaje).once("value");
 
         if (!snapshot.exists()) {
-            return res.status(404).json({ error: "No se encontró el viaje con el id proporcionado" });
+            return res.status(API_NOT_FOUND_ERROR).json({ error: "No se encontró el viaje con el id proporcionado" });
         }
 
         await viajesRef.child(idViaje).update({ blog: true });
@@ -214,7 +214,7 @@ routerViajes.post("/:id/anadirBlog", async (req, res) => {
         return res.json({ mensaje: "Se ha creado el blog del viaje." });
 
     } catch (error) {
-        return res.status(500).json({ 
+        return res.status(INTERNAL_SERVER_ERROR).json({ 
             error: "Ha ocurrido un error al crear el blog del viaje", 
             detalle: error.message 
         });
