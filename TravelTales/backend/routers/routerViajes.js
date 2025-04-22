@@ -192,32 +192,34 @@ routerViajes.post("/:id/anadirPlanificacion", async (req, res) => {
 });
 
 routerViajes.post("/:id/anadirBlog", async (req, res) => {
-    const { idViaje } = req.query;
-    //Lista para almacenar distintos errores
-    let errors = [];
+    const idViaje = req.params.id;
+    const errors = [];
 
-    if (!db) errors.push('Database error')
+    if (!db) errors.push("Database error");
     if (!idViaje) errors.push("No se ha recibido un id de viaje");
 
-    if (errors.length > 0) return res.status(400).json({ errors });
+    if (errors.length > 0) {
+        return res.status(400).json({ errors });
+    }
 
     try {
         const snapshot = await viajesRef.child(idViaje).once("value");
-    
+
         if (!snapshot.exists()) {
             return res.status(404).json({ error: "No se encontró el viaje con el id proporcionado" });
         }
-    
+
         await viajesRef.child(idViaje).update({ blog: true });
-    
-        res.json({ mensaje: "Se ha creado el blog del viaje." });
-    
+
+        return res.json({ mensaje: "Se ha creado el blog del viaje." });
+
     } catch (error) {
-        res.status(500).json({ 
+        return res.status(500).json({ 
             error: "Ha ocurrido un error al crear el blog del viaje", 
             detalle: error.message 
         });
     }
 });
+
 
 export default routerViajes
