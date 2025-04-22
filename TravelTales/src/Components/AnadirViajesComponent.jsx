@@ -50,12 +50,13 @@ let ViajesComponent = ( props)=>{
             })
             if(response.ok){
                 navigate("/inicio")
+                createNotification("Añadido nuevo viaje con datos básicos con éxito.")
             }else{
                 let jsonData = await response.json()
                 let errores=""
-                if(jsonData.errors!=null){
-                    jsonData.errors.forEach(e => {
-                        errores+=e+" "
+                if(jsonData.error!=null){
+                    jsonData.error.forEach(e => {
+                        errores+=e+", "
                     });
                     setMensaje(errores)
                 }else
