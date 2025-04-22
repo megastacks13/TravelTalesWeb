@@ -107,13 +107,12 @@ routerViajes.post("/anadir", async (req, res) => {
             }
         }   
 
-        let planificacion=false
         let blog=false
         const newViajeRef = viajesRef.push();
-        await newViajeRef.set({ nombre, ubicacion, fechaIni, fechaFin, num, email, planificacion, blog });
+        await newViajeRef.set({ nombre, ubicacion, fechaIni, fechaFin, num, email, blog });
 
         //Devolvemos el viaje que acabamos de añadir con su ID generado automáticamente
-        res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, email, planificacion } });
+        res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, email, blog } });
     } catch {
         //Devolvemos el error 402 si hubo algún problema al insertar el viaje
         res.status(402).json({ error: "Ha habido un error insertando el viaje" });

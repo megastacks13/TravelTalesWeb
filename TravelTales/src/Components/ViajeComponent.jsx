@@ -91,12 +91,10 @@ let ViajeComponent = ()=>{
                         </div>
                         <div class="mt-3">
                             {!viaje.blog && <button onClick={anadirBlog}>Anadir Blog</button>}
+                            {viaje.blog && <div class="texto-informativo">Ya tiene blog</div>}
                         </div>
                     </div>
                 </div>
-                    <div>
-                        {viaje.blog && <div class="alert alert-success text-center" role="alert">Ya tiene blog</div>}
-                    </div>
                 </div>
             }
         </div>)
