@@ -192,7 +192,7 @@ routerViajes.post("/:id/anadirPlanificacion", async (req, res) => {
 });
 
 routerViajes.post("/:id/anadirBlog", async (req, res) => {
-    const { idViaje } = req.query;
+    const idViaje = req.params.id;
     let errors = [];
     if (!db) errors.push('Database error')
     if (!idViaje) errors.push("No se ha recibido un id de viaje");

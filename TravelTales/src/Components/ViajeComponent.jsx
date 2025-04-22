@@ -10,9 +10,6 @@ let ViajeComponent = ()=>{
     let {id}=useParams()
     let navigate = useNavigate()
 
-    const [alerta, setAlerta] = useState(false);
-
- 
     useEffect(()=>{
         getViaje()
     },[])
@@ -43,30 +40,23 @@ let ViajeComponent = ()=>{
         return `linear-gradient(to right, ${color1}, ${color2})`;
     };
 
-    useEffect(() => {
-        if (localStorage.getItem("planificacionSuccess")) {
-            setAlerta(true); // Show success alert
-            localStorage.removeItem("planificacionSuccess"); // Clean up after showing the alert
-        }
-    }, []);
-
-    const anadirPlanificacion = async () => {
-        let response = await fetch(backendUrl+"/viajes/"+id+"/anadirPlanificacion?apiKey=" + localStorage.getItem("apiKey"), 
+    const anadirBlog = async () => {        
+        let response = await fetch(backendUrl+"/viajes/"+id+"/anadirBlog?apiKey=" + localStorage.getItem("apiKey"), 
             {method: "POST"})
-            if(response.ok){
-                localStorage.setItem("planificacionSuccess", "true"); // Set a flag before reloading
-                location.reload();
-            }else{
-                let jsonData = await response.json()
-                let errores=""
-                if(jsonData.errors!=null){
-                    jsonData.errors.array.forEach(e => {
-                        errores+=e+" "
-                    });
-                    setMessage(errores)
-                }else
-                    setMessage(jsonData.error)
-                
+
+        if(response.ok) {
+            location.reload();
+        }
+        else {
+            let jsonData = await response.json()
+            let errors=""
+            if(jsonData.errors!=null){
+                jsonData.errors.forEach(e => {
+                    errors+=e+" "
+                });
+                setMessage(errors)
+            }else
+                setMessage(jsonData.error)
         }
     }
 
@@ -99,27 +89,16 @@ let ViajeComponent = ()=>{
                                 <p class="item-vista-basica">{viaje.num}</p>
                             </div>
                         </div>
+                        <div class="mt-3">
+                            {!viaje.blog && <button onClick={anadirBlog}>Anadir Blog</button>}
+                        </div>
                     </div>
+                </div>
                     <div>
-                        {!viaje.planificacion && 
-                            <button onClick={anadirPlanificacion}>
-                            Añadir Planificación</button>
-                        }
+                        {viaje.blog && <div class="alert alert-success text-center" role="alert">Ya tiene blog</div>}
                     </div>
                 </div>
-            </div>
             }
-            <div>
-            {alerta &&
-                <div class="alert alert-primary alert-dismissible fade show" role="alert">
-                <strong>Planificación creada para el viaje</strong>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close" onClick={()=>{setAlerta(false)}}>
-                  <span aria-hidden="true">&times;</span>
-                </button>
-                </div>
-                    }
-            </div>
-            
         </div>)
 }
 
