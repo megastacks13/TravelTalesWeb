@@ -2,68 +2,123 @@ import request from 'supertest';
 import { describe, it, expect, jest } from '@jest/globals';
 import express from 'express';
 import database from '../backend/database.js';
-const { viajesRef } = database;
+import routerViajes from '../backend/routers/routerViajes.js';
+import routerUsers from '../backend/routers/routerUsers.js';
+const { viajesRef, usersRef } = database;
+import appErrors from '../backend/errors.js';
 
 const app = express();
 app.use(express.json());
-let isUserExistent = true;
-
-// Mock del middleware de API keys
-app.use('/viajes', (req, res, next) => {
-    if (isUserExistent)
-        req.infoApiKey = { email: 'test1234@ejemplo.com' };
-    else
-        req.infoApiKey = { email: null };
-    next();
-});
+app.use('/viajes', routerViajes);
+app.use('/users', routerUsers);
 
 describe('GET /viajes/:id', () => {
-    isUserExistent = true;
-    it('debe devolver 400 si falta el id', async () => {
-        // Simulación de la solicitud sin el id en la ruta
-
+    it('debe devolver error 404 si no se proporciona apiKey', async () => {
         const response = await request(app)
-            .get('/viajes/') // Sin ID en la ruta
+            .get('/viajes') // No mandamos apiKey
             .send();
     
-        // Verificamos que la respuesta tenga el status 400
-        expect(response.status).toBe(400);
-        // Verificamos que el mensaje de error sea el esperado
-        expect(response.body).toHaveProperty('error', 'No se ha proporcionado el id del viaje');
+        expect(response.status).toBe(appErrors.API_NOT_FOUND_ERROR.httpStatus);
+        expect(response.body.code).toBe(appErrors.API_NOT_FOUND_ERROR.code);
     });
+    
 
-    it('debe devolver 500 si snapshot no devuelve mail existente', async () => {
+    it('debe devolver 200 si todo esta bien', async () => {
+        const newTrip = {nombre:"Viaje Integracionoso", ubicacion:"Las Antípodas", fechaIni:"2001-01-01", fechaFin:"2002-02-02", num:9}
+        
+        const newUser = {
+                nombre: 'UserDeMiIntergasion',
+                apellidos: 'apellTestUser',
+                email: 'test@example.com',
+                contrasena: 'Pwvalida1_'
+        };
+        
+        const registerResponse = await request(app)
+            .post('/users/register')
+            .send(newUser);
+        
+        expect(registerResponse.status).toBe(200)
+    
+        const loginResponse = await request(app)
+            .post('/users/login')
+            .send({email:newUser.email, contrasena:newUser.contrasena})
+    
+        expect(loginResponse.status).toBe(200)
+            
+        const apiKey = loginResponse.body.apiKey
+    
+        const responseAnadir = await request(app)
+                    .post('/viajes/anadir?apiKey='+apiKey)
+                    .send(newTrip)
+    
+        expect(responseAnadir.status).toBe(200)
+
         // Simulación de la solicitud sin el id en la ruta
         const originalOnce = viajesRef.once;
         viajesRef.once = jest.fn(() => {
             throw new Error('Error simulado en BD');
         });
 
+        let url = `/viajes/${responseAnadir.body.viajeAnadido.id}?apiKey=${apiKey}`
         const response = await request(app)
-            .get('/viajes/idExistente')
+            .get(url)
             .send();
         
-        expect(response.status).toBe(500);
-        expect(response.body.error).toBe('Error interno del servidor');
+        expect(response.status).toBe(200);
 
         // Restaurar implementación original
         viajesRef.once = originalOnce;
+
+        // Limpieza de la bd
+        const userKey = loginResponse.body.id
+        await usersRef.child(userKey).remove(); 
+        const tripKey = responseAnadir.body.viajeAnadido.id;
+        await viajesRef.child(tripKey).remove();
     });
     
-    it('should return 404 since the trip does not exist', async () => {
-           // Simulación de la solicitud sin el id en la ruta
-        const id = 'Idexistente';
-
-        const response = await request(app)
-            .get('/viaje/idInexistente') // Simulación de autenticación
-            .send();
+    it('debe devolver 404 si no se encuentra el viaje', async () => {        
+        const newUser = {
+                nombre: 'UserDeMiIntergasion',
+                apellidos: 'apellTestUser',
+                email: 'test@example.com',
+                contrasena: 'Pwvalida1_'
+        };
+        
+        const registerResponse = await request(app)
+            .post('/users/register')
+            .send(newUser);
+        
+        expect(registerResponse.status).toBe(200)
+    
+        const loginResponse = await request(app)
+            .post('/users/login')
+            .send({email:newUser.email, contrasena:newUser.contrasena})
+    
+        expect(loginResponse.status).toBe(200)
             
-    
-        // Verificamos que la respuesta tenga el status 400
-        expect(response.status).toBe(404);
-        // Verificamos que el mensaje de error sea el esperado
-        expect(response.body).toHaveProperty('error', 'El mail proporcionado no existe en la bd por tanto error en el server');
-     });
-    
+        const apiKey = loginResponse.body.apiKey
+
+
+        // Simulación de la solicitud sin el id en la ruta
+        const originalOnce = viajesRef.once;
+        viajesRef.once = jest.fn(() => {
+            throw new Error('Error simulado en BD');
+        });
+
+        let url = `/viajes/1233333333?apiKey=${apiKey}`
+        const response = await request(app)
+            .get(url)
+            .send();
+        
+        expect(response.status).toBe(appErrors.DATA_NOT_FOUND_ERROR.httpStatus);
+        expect(response.body.code).toBe(appErrors.DATA_NOT_FOUND_ERROR.code);
+        expect(response.body.error).toBe("No se ha encontrado viaje con ese id");
+        // Restaurar implementación original
+        viajesRef.once = originalOnce;
+
+        // Limpieza de la bd
+        const userKey = loginResponse.body.id
+        await usersRef.child(userKey).remove(); 
+    });
 
 });

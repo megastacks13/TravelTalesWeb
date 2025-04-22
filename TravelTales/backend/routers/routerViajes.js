@@ -9,7 +9,7 @@ import appErrors from '../errors.js';
 
 routerViajes.use((req,res,next)=>{
     let apiKey = req.query.apiKey
-
+    
     if(apiKey==undefined)
         return appErrors.throwError(res, appErrors.API_NOT_FOUND_ERROR, "No apiKey")
 
@@ -129,10 +129,6 @@ routerViajes.get("/:id",async(req,res)=>{
     const id = req.params.id
     let email=req.infoApiKey.email
     
-    //Verificamos que el ID obtenido sea válido
-    if(!id){
-        return appErrors.throwError(res, appErrors.MISSING_ARGUMENT_ERROR, "No se ha proporcionado un id válido")
-    }
     try {
         //Buscamos los viajes del usuario en la base de datos
         const snapshot = await viajesRef.orderByChild("email").equalTo(email).once("value");
@@ -145,7 +141,7 @@ routerViajes.get("/:id",async(req,res)=>{
             return appErrors.throwError(res, appErrors.INTERNAL_SERVER_ERROR)
         let viaje = Object.entries(viajes).find(([key, v]) => key === id && Object.keys(v).length !== 0);
         if (!viaje)
-            return appErrors.throwError(res, appErrors.DATA_NOT_FOUND_ERROR, "No se ha encontrado viaje con ese nombre")
+            return appErrors.throwError(res, appErrors.DATA_NOT_FOUND_ERROR, "No se ha encontrado viaje con ese id")
         
         //Por el contrario si se encuentra, devolvemos los datos del viaje
         return res.json(viaje[1]);

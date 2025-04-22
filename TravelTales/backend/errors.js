@@ -5,7 +5,7 @@ const MISSING_ARGUMENT_ERROR = { code: 4001, httpStatus: 400 }; // Falta argumen
 const INVALID_ARGUMENT_ERROR = { code: 4002, httpStatus: 422 }; // Argumento inválido  
 const UNIQUE_KEY_VIOLATION_ERROR = { code: 4003, httpStatus: 409 }; // Violación de clave única 
 const DATA_NOT_FOUND_ERROR = {code:4004, httpStatus:404} // No se ha encontrado un dato
-const API_NOT_FOUND_ERROR = { code: 4004, httpStatus: 404 }; // API no existe  
+const API_NOT_FOUND_ERROR = { code: 4005, httpStatus: 404 }; // API no existe  
  
 // Errores del servidor (5xx)  
 const INTERNAL_SERVER_ERROR = { code: 5001, httpStatus: 500 }; // Error genérico  

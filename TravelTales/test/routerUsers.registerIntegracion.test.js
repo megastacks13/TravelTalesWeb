@@ -4,6 +4,7 @@ import { describe, it, expect, jest } from '@jest/globals';
 import routerUsers from '../backend/routers/routerUsers.js';
 import database from '../backend/database.js';
 const { usersRef } = database;
+import appErrors from '../backend/errors.js';
 
 
 const app = express();
@@ -60,7 +61,8 @@ describe('POST /register', () => {
       .post('/users/register')
       .send(newUser);
 
-    expect(response.status).toBe(401); // comprueba que se devuelva un error
+    expect(response.status).toBe(appErrors.UNIQUE_KEY_VIOLATION_ERROR.httpStatus); // comprueba que se devuelva un error
+    expect(response.body.code).toBe(appErrors.UNIQUE_KEY_VIOLATION_ERROR.code); // Comprueba el codigo de error
     expect(response.body.error).toBe('Ya existe un usuario asignado al email introducido'); // comprueba que el mensaje de error sea el correcto
 
 
@@ -81,8 +83,9 @@ describe('POST /register', () => {
       .post('/users/register')
       .send(invalidUser);
 
-    expect(response.status).toBe(400);  // comprueba que se devuelva un error
-    expect(response.body.errors).toContain('No se ha recibido un nombre');
+    expect(response.status).toBe(appErrors.MISSING_ARGUMENT_ERROR.httpStatus);  // comprueba que se devuelva un error
+    expect(response.body.code).toBe(appErrors.MISSING_ARGUMENT_ERROR.code);  // comprueba que se devuelva un error
+    expect(response.body.error).toContain('No se ha recibido un nombre');
   });
 
   it('debe retornar un error si faltan los apellidos', async () => {
@@ -96,8 +99,11 @@ describe('POST /register', () => {
       .post('/users/register')
       .send(invalidUser);
 
-    expect(response.status).toBe(400);  // comprueba que se devuelva un error
-    expect(response.body.errors).toContain('No se han recibido unos apellidos');
+    console.log(response.body)
+
+    expect(response.status).toBe(appErrors.MISSING_ARGUMENT_ERROR.httpStatus);  // comprueba que se devuelva un error
+    expect(response.body.code).toBe(appErrors.MISSING_ARGUMENT_ERROR.code);  // comprueba que se devuelva un error
+    expect(response.body.error).toContain('No se han recibido unos apellidos');
   });
 
   it('debe retornar un error si el falta el email', async () => {
@@ -111,7 +117,8 @@ describe('POST /register', () => {
       .post('/users/register')
       .send(userWithNoEmail);
 
-    expect(response.status).toBe(400);  // comprueba que se devuelva un error
-    expect(response.body.errors).toContain('No se ha recibido un email');
+    expect(response.status).toBe(appErrors.MISSING_ARGUMENT_ERROR.httpStatus);  // comprueba que se devuelva un error
+    expect(response.body.code).toBe(appErrors.MISSING_ARGUMENT_ERROR.code);  // comprueba que se devuelva un error
+    expect(response.body.error).toContain('No se ha recibido un email');
   });
 });
