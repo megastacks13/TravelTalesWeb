@@ -7,6 +7,13 @@ import { activarBlog } from '../services/blogService.js'
 const routerViajes = express.Router()
 const { db, usersRef, viajesRef } = database
 
+//Para saltarse la auten mientras programo.
+const skipAuth = process.env.SKIP_AUTH === 'true'
+
+
+
+
+
 // Middleware de autenticación
 routerViajes.use((req, res, next) => {
   const apiKey = req.query.apiKey
@@ -26,6 +33,43 @@ routerViajes.use((req, res, next) => {
   req.infoApiKey = infoApiKey
   next()
 })
+
+/**
+ * @swagger
+ * /viajes/anadir:
+ *   post:
+ *     summary: Añadir un nuevo viaje
+ *     description: Crea un viaje con los datos proporcionados.
+ *     parameters:
+ *       - in: query
+ *         name: apiKey
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre:
+ *                 type: string
+ *               ubicacion:
+ *                 type: string
+ *               fechaIni:
+ *                 type: string
+ *               fechaFin:
+ *                 type: string
+ *               num:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Viaje añadido correctamente
+ *       400:
+ *         description: Datos inválidos
+ */
+
 
 /**
  * POST /viajes/anadir
@@ -70,6 +114,27 @@ routerViajes.post('/anadir', async (req, res) => {
  * GET /viajes/:id
  * Obtiene un viaje concreto
  */
+/**
+ * @swagger
+ * /viajes/{id}:
+ *   get:
+ *     summary: Obtener información de un viaje específico
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del viaje
+ *       - in: query
+ *         name: apiKey
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Datos del viaje
+ */
 routerViajes.get('/:id', async (req, res) => {
   const id = req.params.id
   const email = req.infoApiKey.email
@@ -104,11 +169,33 @@ routerViajes.get('/', async (req, res) => {
     return res.status(500).json({ error: 'Error interno al listar viajes', detalle: e.message })
   }
 })
+  
 
 /**
  * POST /viajes/:id/anadirPlanificacion
  * Activa la planificación de un viaje
  */
+/**
+ * @swagger
+ * /viajes/{id}/anadirPlanificacion:
+ *   post:
+ *     summary: Activar la planificación para un viaje
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: apiKey
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Planificación activada
+ */
+
 routerViajes.post('/:id/anadirPlanificacion', async (req, res) => {
   const id = req.params.id
   if (!id) return res.status(400).json({ error: 'Falta id de viaje' })
@@ -129,6 +216,27 @@ routerViajes.post('/:id/anadirPlanificacion', async (req, res) => {
  * POST /viajes/:id/anadirBlog
  * Activa el blog de un viaje
  */
+/**
+ * @swagger
+ * /viajes/{id}/anadirBlog:
+ *   post:
+ *     summary: Activar el blog para un viaje
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: apiKey
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Blog activado para el viaje
+ */
+
 routerViajes.post('/:id/anadirBlog', async (req, res) => {
   const id = req.params.id
   if (!id) return res.status(400).json({ error: 'Falta id de viaje' })
