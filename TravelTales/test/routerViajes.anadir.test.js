@@ -2,6 +2,7 @@ import request from 'supertest';
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import express from 'express';
 import routerViajes from '../backend/routers/routerViajes.js';
+import appErrors from '../backend/errors.js'
 
 // Mock completo de Firebaseconst createMockRef = () => {
 const createMockRef = () => {
@@ -76,7 +77,8 @@ describe('POST /anadir', () => {
             .post('/viajes/anadir')
             .send({});
 
-        expect(res.status).toBe(400);
+        expect(res.status).toBe(appErrors.MISSING_ARGUMENT_ERROR.httpStatus);
+        expect(res.body.code).toBe(appErrors.MISSING_ARGUMENT_ERROR.code);
         expect(res.body.errors).toContain("No se ha recibido un nombre");
         expect(res.body.errors).toContain("No se ha recibido una ubicación");
         expect(res.body.errors).toContain("No se han recibido una fecha de inicio");
@@ -90,7 +92,8 @@ describe('POST /anadir', () => {
             .post('/viajes/anadir')
             .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"01/01/2001", fechaFin:"00/00/0000", num:9});
 
-        expect(res.status).toBe(400);
+        expect(res.status).toBe(appErrors.INVALID_ARGUMENT_ERROR.httpStatus);
+        expect(res.body.code).toBe(appErrors.INVALID_ARGUMENT_ERROR.code);
         expect(res.body.errors).toContain("La fecha de inicio no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
         expect(res.body.errors).toContain("La fecha de finalización no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
     });
@@ -100,7 +103,8 @@ describe('POST /anadir', () => {
             .post('/viajes/anadir')
             .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"2000-99-99", fechaFin:"9999-1-32", num:9});
 
-        expect(res.status).toBe(400);
+        expect(res.status).toBe(appErrors.INVALID_ARGUMENT_ERROR.httpStatus);
+        expect(res.body.code).toBe(appErrors.INVALID_ARGUMENT_ERROR.code);
         expect(res.body.errors).toContain("La fecha de inicio no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
         expect(res.body.errors).toContain("La fecha de finalización no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.");
     });
@@ -110,7 +114,8 @@ describe('POST /anadir', () => {
             .post('/viajes/anadir')
             .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"2001-02-01", fechaFin:"2001-01-01", num:9});
 
-        expect(res.status).toBe(400);
+        expect(res.status).toBe(appErrors.INVALID_ARGUMENT_ERROR.httpStatus);
+        expect(res.body.code).toBe(appErrors.INVALID_ARGUMENT_ERROR.code);
         expect(res.body.errors).toContain("La fecha de finalización debe ser posterior a la fecha de inicio");
     });
 
@@ -119,7 +124,8 @@ describe('POST /anadir', () => {
             .post('/viajes/anadir')
             .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"2001-02-01", fechaFin:"2002-02-01", num:-3});
 
-        expect(res.status).toBe(400);
+        expect(res.status).toBe(appErrors.INVALID_ARGUMENT_ERROR.httpStatus);
+        expect(res.body.code).toBe(appErrors.INVALID_ARGUMENT_ERROR.code);
         expect(res.body.errors).toContain("El número de personas debe ser un número entero mayor o igual a 1");
     });
 
@@ -128,23 +134,25 @@ describe('POST /anadir', () => {
             .post('/viajes/anadir')
             .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"2001-02-01", fechaFin:"2002-02-01", num:"k"});
 
-        expect(res.status).toBe(400);
+        expect(res.status).toBe(appErrors.INVALID_ARGUMENT_ERROR.httpStatus);
+        expect(res.body.code).toBe(appErrors.INVALID_ARGUMENT_ERROR.code);
         expect(res.body.errors).toContain("El número de personas debe ser un número entero mayor o igual a 1");
     });
 
-    // Test de casos 401 ------------------------------------------------------------
-    it('UNIT: should return 401 since the user does not exist', async () => {
+    // Test de casos 404 ------------------------------------------------------------
+    it('UNIT: should return 404 since the user does not exist', async () => {
         usersRef.once.mockResolvedValueOnce({ exists: () => false });
 
         const res = await request(app)
             .post('/viajes/anadir')
             .send({nombre:"Viaje Testarudo", ubicacion:"Las Antípodas", fechaIni:"2001-02-01", fechaFin:"2002-02-01", num:9});
 
-        expect(res.status).toBe(401);
+        expect(res.status).toBe(appErrors.DATA_NOT_FOUND_ERROR.httpStatus);
+        expect(res.body.code).toBe(appErrors.DATA_NOT_FOUND_ERROR.code);
         expect(res.body.error).toContain("No existe un usuario con ese correo");
     });
     
-    it('UNIT: should return 401 since the trip already exists', async () => {
+    it('UNIT: should return 409 since the trip already exists', async () => {
         // Mock para usuario existente
         usersRef.once.mockResolvedValueOnce({ 
             exists: () => true,
@@ -169,7 +177,8 @@ describe('POST /anadir', () => {
             .post('/viajes/anadir')
             .send({ nombre: "Viaje Testarudo", ubicacion: "Las Antípodas", fechaIni: "2001-02-01", fechaFin: "2002-02-01", num: 9 });
 
-        expect(res.status).toBe(401);
+        expect(res.status).toBe(appErrors.UNIQUE_KEY_VIOLATION_ERROR.httpStatus);
+        expect(res.body.code).toBe(appErrors.UNIQUE_KEY_VIOLATION_ERROR.code);
         expect(res.body.error).toContain("Ya has creado un viaje con el mismo nombre");
     });
         
