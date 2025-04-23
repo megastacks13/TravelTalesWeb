@@ -151,7 +151,7 @@ describe('POST /login', () => {
     const user = {
       nombre: 'User',
       apellidos: 'apellOtroUser',
-      email: 'test@example.com', //igual que el anterior  
+      email: 'test@example.com', 
       contrasena: 'otrapassword',
     };
 
