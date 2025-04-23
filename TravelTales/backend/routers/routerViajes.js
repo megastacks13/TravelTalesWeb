@@ -16,6 +16,8 @@ const skipAuth = process.env.SKIP_AUTH === 'true'
 
 // Middleware de autenticación
 routerViajes.use((req, res, next) => {
+
+  if (skipAuth) return next();
   const apiKey = req.query.apiKey
   if (!apiKey) return res.status(405).json({ error: 'No apiKey' })
 
