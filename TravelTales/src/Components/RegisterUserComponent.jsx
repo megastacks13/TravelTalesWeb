@@ -89,7 +89,7 @@ let RegisterUserComponent = (props) =>{
  
             <div class='card-body bg-white  carta-registro'>
                 <h2 class='card-title'>Registrarse</h2>
-                <h3>{mensaje}</h3>
+                <h3 class='errorMessage'>{mensaje}</h3>
                 <form>
                     <FormField id="nombre" label="NOMBRE" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.currentTarget.value)} errors={error.nombre ? [error.nombre] : []} />
                     <FormField id="apellidos" label="APELLIDOS" placeholder="Apellidos" value={apellidos} onChange={(e) => setApellidos(e.currentTarget.value)} errors={error.apellidos ? [error.apellidos] : []} />

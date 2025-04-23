@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import database from "../database.js";
 import activeApiKeys from '../activeApiKeys.js'
 const { db, usersRef } = database;
+import appErrors from '../errors.js';
 
 
 routerUsers.post("/register", async (req, res) => {
@@ -14,20 +15,20 @@ routerUsers.post("/register", async (req, res) => {
     if (!nombre) errors.push("No se ha recibido un nombre");
     if (!apellidos) errors.push("No se han recibido unos apellidos");
     if (!contrasena) errors.push("No se ha recibido una contraseña");
-    if (errors.length > 0) return res.status(400).json({ errors });
+    if (errors.length > 0) return appErrors.throwError(res, appErrors.MISSING_ARGUMENT_ERROR, errors)
 
     try {
         const snapshot = await usersRef.orderByChild("email").equalTo(email).once("value");
         if (snapshot.exists()) {
-            return res.status(401).json({ error: "Ya existe un usuario asignado al email introducido" });
+            return appErrors.throwError(res, appErrors.UNIQUE_KEY_VIOLATION_ERROR, "Ya existe un usuario asignado al email introducido")
         }
 
         const newUserRef = usersRef.push();
-        await newUserRef.set({ email, nombre, contrasena });
+        await newUserRef.set({ email, nombre, apellidos,contrasena });
 
-        res.json({ insertedUser: { id: newUserRef.key, email, nombre } });
+        res.json({ insertedUser: { id: newUserRef.key, email, nombre, apellidos } });
     } catch {
-        res.status(402).json({ error: "Ha habido un error insertando el usuario" });
+        return appErrors.throwError(res, appErrors.OPERATION_FAILED_ERROR, "Ha habido un error interno insertando el usuario");
     }
 });
 
@@ -36,13 +37,12 @@ routerUsers.post("/login", async (req, res) => {
     let errors = [];
     if (!email) errors.push("No se ha recibido un email");
     if (!contrasena) errors.push("No se ha recibido una contraseña");
-    if (errors.length > 0) return res.status(400).json({ errors });
+    if (errors.length > 0) return appErrors.throwError(res, appErrors.MISSING_ARGUMENT_ERROR, errors)
 
     try {
         const snapshot = await usersRef.orderByChild("email").equalTo(email).once("value");
-        if (!snapshot.exists()) {
-            return res.status(401).json({ error: "Correo no válido" });
-        }
+
+        if (!snapshot.exists()) return appErrors.throwError(res, appErrors.DATA_NOT_FOUND_ERROR, "Correo no registrado")
 
         let user = null;
         snapshot.forEach(childSnapshot => {
@@ -50,24 +50,24 @@ routerUsers.post("/login", async (req, res) => {
                 user = { id: childSnapshot.key, ...childSnapshot.val() };
             }
         });
-
-        if (!user) return res.status(402).json({ error: "Contraseña incorrecta" });
+        
+        if (!user) return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, "Contraseña incorrecta")
 
         const apiKey = jwt.sign({ email: user.email, id: user.id, time: Date.now() }, "secret");
         activeApiKeys.push(apiKey);
 
         res.json({ apiKey, id: user.id, email: user.email });
     } catch{
-        res.status(402).json({ error: "Ha habido un error al realizarse el login" });
+        return appErrors.throwError(res, appErrors.OPERATION_FAILED_ERROR, "Ha habido un error interno al realizar el login");
     }
 });
 
 routerUsers.post("/disconnect", (req, res) => {
     const apiKey = req.query.apiKey;
-    if (!apiKey) return res.status(400).json({ error: "Falta la apiKey" });
+    if (!apiKey) return appErrors.throwError(res, appErrors.MISSING_ARGUMENT_ERROR, "Falta la apiKey")
 
     const index = activeApiKeys.indexOf(apiKey);
-    if (index === -1) return res.status(400).json({ error: "apiKey no registrada en el servidor" });
+    if (index === -1) return appErrors.throwError(res, appErrors.API_NOT_FOUND_ERROR, "apiKey no registrada en el servidor")
 
     activeApiKeys.splice(index, 1);
     res.json({ message: "ApiKey eliminada" });
