@@ -3,12 +3,13 @@ import { backendUrl } from "../Globals";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "../VistaViajeBasico.css"
+
 let ViajeComponent = ()=>{
     let [viaje,setViaje]=useState({})
     let [message,setMessage]=useState("")
     let {id}=useParams()
     let navigate = useNavigate()
- 
+
     useEffect(()=>{
         getViaje()
     },[])
@@ -39,6 +40,26 @@ let ViajeComponent = ()=>{
         return `linear-gradient(to right, ${color1}, ${color2})`;
     };
 
+    const anadirBlog = async () => {        
+        let response = await fetch(backendUrl+"/viajes/"+id+"/anadirBlog?apiKey=" + localStorage.getItem("apiKey"), 
+            {method: "POST"})
+
+        if(response.ok) {
+            location.reload();
+        }
+        else {
+            let jsonData = await response.json()
+            let errors=""
+            if(jsonData.errors!=null){
+                jsonData.errors.forEach(e => {
+                    errors+=e+" "
+                });
+                setMessage(errors)
+            }else
+                setMessage(jsonData.error)
+        }
+    }
+
     return (
         <div>
             {message&& 
@@ -68,11 +89,14 @@ let ViajeComponent = ()=>{
                                 <p class="item-vista-basica">{viaje.num}</p>
                             </div>
                         </div>
+                        <div class="mt-3">
+                            {!viaje.blog && <button onClick={anadirBlog}>Anadir Blog</button>}
+                            {viaje.blog && <div class="texto-informativo">Ya tiene blog</div>}
+                        </div>
                     </div>
                 </div>
-            </div>
+                </div>
             }
-            
         </div>)
 }
 

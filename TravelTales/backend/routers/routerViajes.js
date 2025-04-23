@@ -110,14 +110,14 @@ routerViajes.post("/anadir", async (req, res) => {
                     return appErrors.throwError(res, appErrors.UNIQUE_KEY_VIOLATION_ERROR, "Ya has creado un viaje con el mismo nombre")
                 }
             }
-        }
+        }   
 
-        //Si todo es correcto, creamos un nuevo viaje en la base de datos
-        const newViajeRef = viajesRef.push()
-        await newViajeRef.set({ nombre, ubicacion, fechaIni, fechaFin, num, email })
+        let blog=false
+        const newViajeRef = viajesRef.push();
+        await newViajeRef.set({ nombre, ubicacion, fechaIni, fechaFin, num, email, blog });
 
         //Devolvemos el viaje que acabamos de añadir con su ID generado automáticamente
-        res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, email } })
+        res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, email, blog } })
     } catch {
         //Devolvemos el error adecuado si hubo algún problema al insertar el viaje
         return appErrors.throwError(res, appErrors.UNIQUE_KEY_VIOLATION_ERROR, "Ha habido un error insertando el viaje")
@@ -163,8 +163,32 @@ routerViajes.get("/",async(req,res)=>{
         return res.json(viajes);
     } catch (error) {
         console.error("Error al obtener el viaje:", error);
-        return appErrors.throwError(res, appErrors.INTERNAL_SERVER_ERROR)
+        return res.status(500).json({ error: "Error interno del servidor" });
     }
 })
+
+routerViajes.post("/:id/anadirBlog", async (req, res) => {
+    const idViaje = req.params.id;
+    let errors = [];
+    if (!db) errors.push('Database error')
+    if (!idViaje) errors.push("No se ha recibido un id de viaje");
+
+    if (errors.length > 0) return res.status(400).json({ errors });
+
+    try {
+        const snapshot = await viajesRef.child(idViaje).once("value");
+    
+        if (!snapshot.exists()) {
+            return res.status(404).json({ error: "No se encontró el viaje con el id proporcionado" });
+        }
+    
+        await viajesRef.child(idViaje).update({ blog: true });
+    
+        res.json({ mensaje: "Se ha creado el blog del viaje." });
+    
+    } catch (error) {
+        res.status(500).json({ error: "Ha ocurrido un error al crear el blog del viaje", detalle: error.message });
+    }
+});
 
 export default routerViajes

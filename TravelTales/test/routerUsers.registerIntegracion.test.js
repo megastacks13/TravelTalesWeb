@@ -17,7 +17,7 @@ describe('POST /register', () => {
     const newUser = {
       nombre: 'TestUser',
       apellidos: 'apellTestUser',
-      email: 'test@example.com',
+      email: 'test2@example.com',
       contrasena: 'pwvalida'
     };
 
@@ -48,11 +48,11 @@ describe('POST /register', () => {
     };
 
     // crea un usuario
-    await request(app).post('/users/register').send(existingUser);
-
+    const response1= await request(app).post('/users/register').send(existingUser);
+    console.log(response1)
     const newUser = {
-      nombre: 'OtroUser',
-      apellidos: 'apellOtroUser',
+      nombre: 'UserExistente',
+      apellidos: 'apellUserExistente',
       email: 'test@example.com', //igual que el anterior  
       contrasena: 'otrapassword',
     };
@@ -68,9 +68,11 @@ describe('POST /register', () => {
 
     // Verifica que el usuario haya sido insertado en la base de datos
     const snapshot = await usersRef.orderByChild('email').equalTo(newUser.email).once('value');
-    // Limpieza de la bd
-    const userKey = Object.keys(snapshot.val())[0];
-    await usersRef.child(userKey).remove();
+    if (snapshot){
+      // Limpieza de la bd
+      const userKey = Object.keys(snapshot.val())[0];
+      await usersRef.child(userKey).remove();
+    }
   });
 
   it('debe retornar un error si faltan el nombre', async () => {

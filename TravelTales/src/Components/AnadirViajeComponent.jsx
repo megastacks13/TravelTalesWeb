@@ -99,7 +99,7 @@ let ViajesComponent = ( props)=>{
 
                 <div className='d-flex justify-content-between mt-3'> 
                     <button class='btn btn-sm btn-secondary me-2' type='button' onClick={() => window.history.back()}>Volver Atrás</button>
-                    <button class='btn btn-sm btn-primary' onClick={addTravel}>Añadir viaje</button>
+                    <button class='btn btn-sm btn-primary' type='submit' onClick={addTravel}>Añadir viaje</button>
                 </div>
             </form>
         </div>

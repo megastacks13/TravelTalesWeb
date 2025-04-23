@@ -10,11 +10,12 @@ let InicioComponent = (props) =>{
 
   useEffect(()=>{
     checkLogin();
-  },[])
+  })
 
   let checkLogin = () => {
-    if(!login)
+    if(!login){
       navigate("/")
+    }
   }
 
   return (
