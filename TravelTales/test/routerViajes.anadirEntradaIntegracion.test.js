@@ -59,8 +59,8 @@ describe('POST /viajes/:id/anadirEntrada', () => {
 
     expect(response.status).toBe(appErrors.INVALID_ARGUMENT_ERROR.httpStatus);
     expect(response.body.code).toBe(appErrors.INVALID_ARGUMENT_ERROR.code);
-    expect(response.body.error).toContain("No se ha introducido una fecha");
-    expect(response.body.error).toContain("No hay contenido");
+    expect(response.body.error).toContain("No se ha recibido una fecha");
+    expect(response.body.error).toContain("No se ha recibido contenido");
 
     await usersRef.child(userKey).remove();
     await viajesRef.child(viajeId).remove();

@@ -184,16 +184,16 @@ routerViajes.post("/:id/anadirEntrada", async (req, res) => {
     let contenido = req.body.contenido
     let errors = [];
     if (!db) errors.push('Database error')
-    if (!idViaje) errors.push("No se ha recibido un id de viaje");
-    if(fecha==undefined) errors.push("No se ha introducido una fecha")
-    if(contenido==undefined) errors.push("No hay contenido")
+    if (!idViaje) errors.push("No se ha recibido un id de viaje")
+    if(!fecha) errors.push("No se ha recibido una fecha")
+    if(!contenido) errors.push("No se ha recibido contenido");
     
     const fechaRegex =/^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
 
     if (fecha && !fechaRegex.test(fecha)) errors.push("La fecha no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.")
  
 
-        if (errors.length > 0) return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, errors)
+        if (errors.length > 0) return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, errors);
 
     try {
         const snapshot = await viajesRef.child(idViaje).once("value");
