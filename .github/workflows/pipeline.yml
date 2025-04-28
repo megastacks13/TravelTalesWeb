@@ -21,7 +21,7 @@ jobs:
   
       - name: Instalar dependencias
         run: npm install
-        working-directory: ./traveltales
+        working-directory: TravelTales
 
       - name: Run Unit Tests
         run: npm test -- --coverage
