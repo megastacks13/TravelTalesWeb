@@ -27,14 +27,16 @@ let ViajesComponent = ( props)=>{
             errores.ubicacion= "El campo 'ubicación' debe tener un valor";
         if (!Number.isInteger(Number(numero)) || Number(numero) < 1)
             errores.numero = "El número de personas debe ser un número entero mayor o igual a 1";
+        if (fechaIni > fechaFin)
+            errores.fechas = "La fecha inicial debe ser menor o igual que la fecha final";
         setError(errores);
     }
 
-    let addTravel = async(event) =>{
+    let addTravel = async(event) => {
         event.preventDefault();
-        if (Object.keys(error).length > 0){
+        if (Object.keys(error).length > 0) {
             createNotification("No debe haber errores para poder añadir un viaje")
-        }else{
+        } else {
             let response = await fetch(backendUrl+"/viajes/anadir?apiKey="+localStorage.getItem("apiKey"), 
             {method: "POST",
                 headers: {"Content-Type":"application/json"},
@@ -48,12 +50,13 @@ let ViajesComponent = ( props)=>{
             })
             if(response.ok){
                 navigate("/inicio")
+                createNotification("Añadido nuevo viaje con datos básicos con éxito.")
             }else{
                 let jsonData = await response.json()
                 let errores=""
-                if(jsonData.errors!=null){
-                    jsonData.errors.array.forEach(e => {
-                        errores+=e+" "
+                if(jsonData.error!=null){
+                    jsonData.error.forEach(e => {
+                        errores+=e+", "
                     });
                     setMensaje(errores)
                 }else
@@ -69,7 +72,7 @@ let ViajesComponent = ( props)=>{
         
         <div class='card-body bg-white  carta-registro'>
             <h2 class='card-title'>Añadir viaje</h2>
-            <h3>{mensaje}</h3>
+            <h3 class="errorMessage">{mensaje}</h3>
             <form>
                 <FormField id="nombre" label="NOMBRE" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.currentTarget.value)} errors={error.nombre ? [error.nombre] : []} />
                 <FormField id="ubicacion" label="UBICACIÓN" placeholder="Ubicación" value={ubicacion} onChange={(e) => setUbicacion(e.currentTarget.value)} errors={error.ubicacion ? [error.ubicacion] : []} />
@@ -79,7 +82,7 @@ let ViajesComponent = ( props)=>{
                     label="FECHA DE INICIO" 
                     type="date" 
                     value={fechaIni} 
-                    onChange={(e) => setFechaIni(e.currentTarget.value)}
+                    onChange={(e) => setFechaIni(e.currentTarget.value)} errors={error.fechas ? [error.fechas] : []}
                     placeholder='yyyy/mm/dd' 
                 />
 
@@ -88,7 +91,7 @@ let ViajesComponent = ( props)=>{
                     label="FECHA DE FINALIZACIÓN" 
                     type="date" 
                     value={fechaFin} 
-                    onChange={(e) => setFechaFin(e.currentTarget.value)} 
+                    onChange={(e) => setFechaFin(e.currentTarget.value)} errors={error.fechas ? [error.fechas] : []}
                     placeholder='yyyy/mm/dd'
                 />
 

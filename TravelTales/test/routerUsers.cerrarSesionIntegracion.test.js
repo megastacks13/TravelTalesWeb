@@ -3,6 +3,7 @@ import { describe, it, expect } from '@jest/globals';
 import express from 'express';
 import routerUsers from '../backend/routers/routerUsers.js';
 import activeApiKeys from '../backend/activeApiKeys.js';
+import appErrors from '../backend/errors.js'
 
 const app = express();
 app.use(express.json());
@@ -15,7 +16,8 @@ describe('POST /disconnect', () => {
             .post('/users/disconnect')
             .query({}); // Sin apiKey
 
-        expect(response.status).toBe(400);
+        expect(response.status).toBe(appErrors.MISSING_ARGUMENT_ERROR.httpStatus);
+        expect(response.body.code).toBe(appErrors.MISSING_ARGUMENT_ERROR.code);
         expect(response.body.error).toBe('Falta la apiKey');
     });
 
@@ -24,7 +26,8 @@ describe('POST /disconnect', () => {
             .post('/users/disconnect')
             .query({ apiKey: 'apiKey2' }); // La apiKey no existe
 
-        expect(response.status).toBe(400);
+        expect(response.status).toBe(appErrors.API_NOT_FOUND_ERROR.httpStatus);
+        expect(response.body.code).toBe(appErrors.API_NOT_FOUND_ERROR.code);
         expect(response.body.error).toBe('apiKey no registrada en el servidor');
     });
 
