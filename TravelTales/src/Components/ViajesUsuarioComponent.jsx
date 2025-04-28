@@ -3,26 +3,10 @@ import { backendUrl } from "../Globals";
 import { useNavigate } from "react-router-dom";
 import '../ViajesUsuario.css';
 
-let ViajesUsuarioComponent = () => {
-    let [viajes, setViajes] = useState([])
+let ViajesUsuarioComponent = (props) => {
     let navigate = useNavigate()
+    let {viajes} = props
 
-    useEffect(() => {
-        buscarViajes()
-    }, [])
-
-    let buscarViajes = async () => {
-        let response = await fetch(backendUrl + "/viajes?apiKey=" + localStorage.getItem("apiKey"))
-        if (response.status == 401) {
-            navigate("/login")
-            return
-        }
-        if (response.ok) {
-            let jsonData = await response.json()
-            setViajes(jsonData)
-            console.log(viajes)
-        }
-    }
     const generarFondoGradiente = (name) => {
         let hash = 0;
         for (let i = 0; i < name.length; i++) {
@@ -34,10 +18,8 @@ let ViajesUsuarioComponent = () => {
     };
 
     return (
-        <div class="container-misViajes">
-            <div class="container-titulo-misViajes">
-                <h1 class="text-center">Mis Viajes</h1>
-            </div>
+        <div >
+            
             <div class="container container-viajes">
                 {Object.entries(viajes).length > 0 && (
                     <div class="row">
