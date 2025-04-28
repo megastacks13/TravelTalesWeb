@@ -18,6 +18,8 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '20'
+      - name: Cambiar dir
+        run: cd /home/runner/work/TravelTalesWeb/TravelTales
   
       - name: Instalar dependencias
         run: npm install
