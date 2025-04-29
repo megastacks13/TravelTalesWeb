@@ -2,99 +2,105 @@ import request from 'supertest';
 import { describe, it, expect, jest } from '@jest/globals';
 import express from 'express';
 import routerViajes from '../backend/routers/routerViajes.js';
+import routerUsers from '../backend/routers/routerUsers.js';
 import database from '../backend/database.js';
-const { usersRef, viajesRef } = database;
+const { usersRef, viajesRef, entradasRef } = database;
+import appErrors from '../backend/errors.js';
 
 const app = express();
 app.use(express.json());
-
 app.use('/viajes', routerViajes);
+app.use('/users', routerUsers);
 
-describe('POST /:id/anadirBlog', () => {
-    //Test para comprobar la correcta adición de un viaje 
+describe('POST /viajes/:id/anadirBlog', () => {
+  const newUser = {
+    nombre: 'Tester Blog',
+    apellidos: 'Apellido Blog',
+    email: 'testing2Blog@example.com',
+    contrasena: 'Pwvalida1_'
+  };
+
+  const newTrip = {
+    nombre: 'Viaje con blog',
+    ubicacion: 'Testlandia',
+    fechaIni: '2025-01-01',
+    fechaFin: '2025-12-31',
+    num: 2
+  };
+
+  let apiKey, viajeId, userKey;
+  
+  it('Error 404: id de viaje no existente', async () => {
+    const registerResponse = await request(app)
+          .post('/users/register')
+          .send(newUser);
+    
+        expect(registerResponse.status).toBe(200)
+    
+    const loginResponse = await request(app)
+          .post('/users/login')
+          .send({email:newUser.email, contrasena:newUser.contrasena})
+    
+        expect(loginResponse.status).toBe(200)
+          
+    apiKey = loginResponse.body.apiKey
+
+    userKey = loginResponse.body.id;
+
+    const viaje = await request(app)
+       .post('/viajes/anadir?apiKey=' + apiKey)
+        .send(newTrip);
+      expect(viaje.status).toBe(200);
+    viajeId = viaje.body.viajeAnadido.id;
+
+    const response = await request(app)
+        .post('/viajes/fakeId123/anadirBlog?apiKey='+apiKey)
+        .send({});
+
+      expect(response.status).toBe(appErrors.DATA_NOT_FOUND_ERROR.httpStatus);
+      expect(response.body.code).toBe(appErrors.DATA_NOT_FOUND_ERROR.code);
+
+    await usersRef.child(userKey).remove();
+    await viajesRef.child(viajeId).remove();
+  });
+
+  
+  //Test para comprobar la correcta adición de un viaje 
     //Codigo 200 (se añade correctamente)
     it('debe añadir un viaje con datos válidos', async () => {
-      const nuevoViaje = {
-        nombre: 'Vacaciones',
-        ubicacion: 'Madrid',
-        fechaIni: '2025-08-01',
-        fechaFin: '2025-08-10',
-        num: 3,
-      };
-  
-      await request(app)
-        .post('/viajes/anadir')
-        .send(nuevoViaje);
-  
-  
-      // Verificar que el viaje esté en la base de datos
-      const snapshot = await viajesRef.orderByChild('nombre').equalTo(nuevoViaje.nombre).once('value');
-      expect(snapshot.exists()).toBe(true);
+        const registerResponse = await request(app)
+          .post('/users/register')
+          .send(newUser);
 
-      // Recuperar la ID del viaje recién creado (Firebase genera una key automáticamente)
-      const viajeKey = Object.keys(snapshot.val())[0];
-        
-      // Verificar que el atributo planificacion es false inicialmente
-      const viajeCreado = snapshot.val()[viajeKey];
-      expect(viajeCreado.planificacion).toBe(false);
+          expect(registerResponse.status).toBe(200)
 
-      // Hacer la petición para añadir planificación
-      await request(app)
-          .post(`/viajes/${viajeKey}/anadirPlanificacion`);
+        const loginResponse = await request(app)
+            .post('/users/login')
+            .send({email:newUser.email, contrasena:newUser.contrasena})
 
-      // Verificar que el atributo planificacion ahora es true
-      const snapshotActualizado = await viajesRef.child(viajeKey).once('value');
-      expect(snapshotActualizado.val().planificacion).toBe(true);
-
-      // Limpieza de la BD
-      await viajesRef.child(viajeKey).remove();
-    });
-
-  //Tests con el código de error 400 - Correspondiente a datos inválidos
-    //Si falta algún campo
-    it('No debe dejar añadir una planificacion si ya existe, pero si ocurre, no pasa nada', async () => {
-        const nuevoViaje = {
-          nombre: 'Vacaciones',
-          ubicacion: 'Madrid',
-          fechaIni: '2025-08-01',
-          fechaFin: '2025-08-10',
-          num: 3,
-        };
-    
-        await request(app)
-          .post('/viajes/anadir')
-          .send(nuevoViaje);
-    
-    
-        // Verificar que el viaje esté en la base de datos
-        const snapshot = await viajesRef.orderByChild('nombre').equalTo(nuevoViaje.nombre).once('value');
-        expect(snapshot.exists()).toBe(true);
-  
-        // Recuperar la ID del viaje recién creado (Firebase genera una key automáticamente)
-        const viajeKey = Object.keys(snapshot.val())[0];
+          expect(loginResponse.status).toBe(200)
           
-        // Verificar que el atributo planificacion es false inicialmente
-        const viajeCreado = snapshot.val()[viajeKey];
-        expect(viajeCreado.planificacion).toBe(false);
-  
-        // Hacer la petición para añadir planificación
-        await request(app)
-            .post(`/viajes/${viajeKey}/anadirPlanificacion`);
-  
-        // Verificar que el atributo planificacion ahora es true
-        let snapshotActualizado = await viajesRef.child(viajeKey).once('value');
-        expect(snapshotActualizado.val().planificacion).toBe(true);
-  
-        // Hacer nuevamente la petición para añadir planificación
-        await request(app)
-            .post(`/viajes/${viajeKey}/anadirPlanificacion`);
+        apiKey = loginResponse.body.apiKey
 
-        // Verificar que el atributo planificacion sigue siendo true
-        snapshotActualizado = await viajesRef.child(viajeKey).once('value');
-        expect(snapshotActualizado.val().planificacion).toBe(true);
+        userKey = loginResponse.body.id;
 
-        // Limpieza de la BD
-        await viajesRef.child(viajeKey).remove();
+        const viaje = await request(app)
+            .post('/viajes/anadir?apiKey=' + apiKey)
+            .send(newTrip);
+        expect(viaje.status).toBe(200);
+        viajeId = viaje.body.viajeAnadido.id;
+
+        const response = await request(app)
+        .post(`/viajes/${viajeId}/anadirBlog?apiKey=`+apiKey)
+        .send({});
+
+        expect(response.status).toBe(200);
+        expect(response.body.mensaje).toBe("Se ha creado el blog del viaje.");
+        expect(viajesRef.child(viajeId).get(blog)).toBe(true);
+
+        await entradasRef.child(response.body.idEntrada).remove();
+        await usersRef.child(userKey).remove();
+        await viajesRef.child(viajeId).remove();
     });
 
 });
