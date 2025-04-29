@@ -63,7 +63,7 @@ describe('POST /viajes/:id/anadirBlog', () => {
 
     it('debería devolver 400 si falta idViaje', async () => {
         const response = await request(app)
-            .post('/viajes/123/anadirBlog') // En la URL está el :id pero falta el query param idViaje
+            .post('/viajes/123/anadirBlog?apiKey=isValidApiKey') 
             .send();
         
         expect(response.status).toBe(400);
@@ -77,7 +77,7 @@ describe('POST /viajes/:id/anadirBlog', () => {
         });
 
         const response = await request(app)
-            .post('/viajes/123/anadirBlog?idViaje=123')
+            .post('/viajes/123/anadirBlog?apiKey=apiKey1')
             .send();
         
         expect(response.status).toBe(404);
@@ -92,7 +92,7 @@ describe('POST /viajes/:id/anadirBlog', () => {
         mockViajesRef.update.mockResolvedValueOnce();
 
         const response = await request(app)
-            .post('/viajes/123/anadirBlog?idViaje=123')
+            .post('/viajes/123/anadirBlog?apiKey=apiKey1')
             .send();
         
         expect(response.status).toBe(200);
@@ -104,7 +104,7 @@ describe('POST /viajes/:id/anadirBlog', () => {
         mockViajesRef.once.mockRejectedValueOnce(new Error("Error inesperado"));
 
         const response = await request(app)
-            .post('/viajes/123/anadirBlog?idViaje=123')
+            .post('/viajes/123/anadirBlog?apiKey=apiKey1')
             .send();
         
         expect(response.status).toBe(500);
