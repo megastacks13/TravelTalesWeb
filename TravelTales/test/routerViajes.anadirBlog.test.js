@@ -1,114 +1,95 @@
-import request from 'supertest';
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
-import express from 'express';
-import routerViajes from '../backend/routers/routerViajes.js';
-
-// Mock completo de Firebase
-const createMockRef = () => {
-    const mock = {
-        orderByChild: jest.fn().mockReturnThis(),
-        equalTo: jest.fn().mockReturnThis(),
-        once: jest.fn(),
-        push: jest.fn().mockReturnThis(),
-        set: jest.fn(),
-        child: jest.fn().mockReturnThis(),
-        update: jest.fn(),
-        remove: jest.fn()
+// Mocks arriba del todo
+const childMock = jest.fn();
+jest.mock('../backend/database.js', () => {
+    return {
+        __esModule: true,
+        default: {
+            viajesRef: {
+                child: childMock
+            }
+        }
     };
-    return mock;
-};
-
-const mockUsersRef = createMockRef();
-const mockViajesRef = createMockRef();
-
-jest.mock('../backend/database.js', () => ({
-    db: {},
-    usersRef: mockUsersRef,
-    viajesRef: mockViajesRef
-}));
-
-// Importar después del mock
-import database from '../backend/database.js';
-const { usersRef, viajesRef } = database;
-
-const app = express();
-app.use(express.json());
-
-let isUserExistent = true;
-let isValidApiKey = true;
-
-// Mock del middleware de API keys
-app.use('/viajes', (req, res, next) => {
-    if (!isValidApiKey) {
-        return res.status(401).json({ error: "invalid apiKey" });
-    }
-    
-    if (isUserExistent) {
-        req.infoApiKey = { email: 'correo@correo.com' };
-    } else {
-        req.infoApiKey = { email: null };
-    }
-    next();
 });
 
-app.use('/viajes', routerViajes);
+import request from 'supertest';
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
+import express from 'express';
+import routerViajes from '../backend/routers/routerViajes.js';
+import appErrors from '../backend/errors.js';
+import activeApiKeys from '../backend/activeApiKeys.js';
+import jwt from 'jsonwebtoken';
+import database from '../backend/database.js';
 
-describe('POST /viajes/:id/anadirBlog', () => {
+const app = express(); 
+app.use(express.json());
+app.use('/viajes', routerViajes); 
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-        isUserExistent = true;
-        isValidApiKey = true;
-    });
+// Mock de activeApiKeys
+const mockActiveApiKeys = [];
+jest.spyOn(activeApiKeys, 'push').mockImplementation((key) => mockActiveApiKeys.push(key));
+jest.spyOn(activeApiKeys, 'indexOf').mockImplementation((key) => mockActiveApiKeys.indexOf(key));
+jest.spyOn(activeApiKeys, 'splice').mockImplementation((index, count) => mockActiveApiKeys.splice(index, count));
 
-    it('debería devolver 400 si falta idViaje', async () => {
+// Middleware simulado de API key + JWT
+beforeEach(() => {
+    mockActiveApiKeys.length = 0;
+    mockActiveApiKeys.push('apiKey1');
+
+    jest.spyOn(jwt, 'verify').mockImplementation(() => ({ email: 'correo@correo.com' }));
+});
+
+afterEach(() => {
+    jest.resetAllMocks();
+    childMock.mockReset(); 
+});
+
+describe('POST /:id/anadirBlog', () => {
+    it('debería devolver 400 si falta idViaje en el body', async () => {
         const response = await request(app)
-            .post('/viajes/123/anadirBlog?apiKey=isValidApiKey') 
-            .send();
-        
+            .post('/viajes/123/anadirBlog?apiKey=apiKey1')
+            .send({}); // Body vacío
+
         expect(response.status).toBe(400);
         expect(response.body.errors).toContain("No se ha recibido un id de viaje");
     });
 
     it('debería devolver 404 si no se encuentra el viaje', async () => {
-        mockViajesRef.child.mockReturnThis();
-        mockViajesRef.once.mockResolvedValueOnce({
-            exists: () => false
+        childMock.mockReturnValue({
+            once: jest.fn().mockResolvedValueOnce({ exists: () => false })
         });
 
         const response = await request(app)
             .post('/viajes/123/anadirBlog?apiKey=apiKey1')
-            .send();
-        
+            .send({ idViaje: '123' });
+
         expect(response.status).toBe(404);
         expect(response.body.error).toBe("No se encontró el viaje con el id proporcionado");
     });
 
     it('debería devolver 200 si se añade correctamente el blog', async () => {
-        mockViajesRef.child.mockReturnThis();
-        mockViajesRef.once.mockResolvedValueOnce({
-            exists: () => true
+        childMock.mockReturnValue({
+            once: jest.fn().mockResolvedValueOnce({ exists: () => true }),
+            update: jest.fn().mockResolvedValueOnce()
         });
-        mockViajesRef.update.mockResolvedValueOnce();
 
         const response = await request(app)
             .post('/viajes/123/anadirBlog?apiKey=apiKey1')
-            .send();
-        
+            .send({ idViaje: '123' });
+
         expect(response.status).toBe(200);
         expect(response.body.mensaje).toBe("Se ha creado el blog del viaje.");
     });
 
     it('debería devolver 500 si ocurre un error inesperado', async () => {
-        mockViajesRef.child.mockReturnThis();
-        mockViajesRef.once.mockRejectedValueOnce(new Error("Error inesperado"));
+        childMock.mockReturnValue({
+            once: jest.fn().mockRejectedValue(new Error("Error inesperado"))
+        });
 
         const response = await request(app)
             .post('/viajes/123/anadirBlog?apiKey=apiKey1')
-            .send();
-        
+            .send({ idViaje: '123' });
+
         expect(response.status).toBe(500);
         expect(response.body.error).toBe("Ha ocurrido un error al crear el blog del viaje");
     });
-
 });
