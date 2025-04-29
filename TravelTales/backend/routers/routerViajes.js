@@ -1,18 +1,14 @@
 import express from 'express'
+let routerViajes = express.Router()
+import database from "../database.js";
+const { db, usersRef, viajesRef, entradasRef } = database;
 import jwt from 'jsonwebtoken'
-import database from '../database.js'
 import activeApiKeys from '../activeApiKeys.js'
+import appErrors from '../errors.js';
 import { activarBlog } from '../services/blogService.js'
-
-const routerViajes = express.Router()
-const { db, usersRef, viajesRef } = database
 
 //Para saltarse la auten mientras programo.
 const skipAuth = process.env.SKIP_AUTH === 'true'
-
-
-
-
 
 // Middleware de autenticación
 routerViajes.use((req, res, next) => {
