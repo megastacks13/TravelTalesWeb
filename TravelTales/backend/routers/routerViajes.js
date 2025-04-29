@@ -164,6 +164,29 @@ routerViajes.get("/",async(req,res)=>{
         console.error("Error al obtener el viaje:", error);
         return res.status(500).json({ error: "Error interno del servidor" });
     }
-})
+});
+
+routerViajes.get('/:id/buscar', async (req, res) => {
+  const { ubicacion } = req.query;
+  const email = req.infoApiKey?.email;
+
+  if (!ubicacion) {
+    return res.status(400).json({ error: 'Falta la ubicación' });
+  }
+
+  try {
+    const snap = await viajesRef
+      .orderByChild('ubicacion')
+      .equalTo(ubicacion)
+      .once('value');
+
+    const resultados = snap.exists() ? snap.val() : {};
+
+    return res.json(resultados);
+  } catch (e) {
+    console.error('Error buscando viajes:', e);
+    return res.status(500).json({ error: 'Error interno al buscar viajes' });
+  }
+});
 
 export default routerViajes
