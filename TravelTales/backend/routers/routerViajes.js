@@ -73,7 +73,7 @@ routerViajes.post("/anadir", async (req, res) => {
         const fechaInicioDate = parseFecha(fechaIni)
         const fechaFinDate = parseFecha(fechaFin)
 
-        if (fechaFinDate <= fechaInicioDate)
+        if (fechaFinDate < fechaInicioDate)
             errors.push("La fecha de finalización debe ser posterior a la fecha de inicio")
         
     } catch (error) {
@@ -166,5 +166,21 @@ routerViajes.get("/",async(req,res)=>{
         return res.status(500).json({ error: "Error interno del servidor" });
     }
 })
+
+routerViajes.post('/:id/anadirBlog', async (req, res) => {
+    const idViaje = req.params.id
+    if (!idViaje) return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR);
+  
+    try {
+      const snap = await viajesRef.child(idViaje).once('value')
+      if (!snap.exists()) return appErrors.throwError(res, appErrors.DATA_NOT_FOUND_ERROR)
+  
+      await viajesRef.child(idViaje).update({ blog: true });
+      res.json({ mensaje: "Se ha creado el blog del viaje." });
+  
+    } catch (e) {
+      return appErrors.throwError(res, appErrors.INTERNAL_SERVER_ERROR, e)
+    }
+  })
 
 export default routerViajes

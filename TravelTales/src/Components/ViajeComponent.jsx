@@ -40,7 +40,8 @@ let ViajeComponent = ()=>{
         return `linear-gradient(to right, ${color1}, ${color2})`;
     };
 
-    const anadirBlog = async () => {        
+    const anadirBlog = async () => {   
+        console.log("Ejecutando metodo")     
         let response = await fetch(backendUrl+"/viajes/"+id+"/anadirBlog?apiKey=" + localStorage.getItem("apiKey"), 
             {method: "POST"})
 
@@ -90,7 +91,7 @@ let ViajeComponent = ()=>{
                             </div>
                         </div>
                         <div class="mt-3">
-                            {!viaje.blog && <button onClick={anadirBlog}>Anadir Blog</button>}
+                            {!viaje.blog && <button onClick={anadirBlog}>Añadir Blog</button>}
                             {viaje.blog && <div class="texto-informativo">Ya tiene blog</div>}
                         </div>
                     </div>
