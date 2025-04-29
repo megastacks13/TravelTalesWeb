@@ -18,7 +18,8 @@ let BuscarViajeComponent = ( )=>{
         return name === null || name === undefined || name.trim() === "";
     }
   
-    let buscarViaje = async() =>{
+    let buscarViaje = async(event) =>{
+        event.preventDefault();
         if (isNameEmpty(nombre)){ // si no la búsqueda es vacía
             let response = await fetch(backendUrl + "/viajes?apiKey=" + localStorage.getItem("apiKey"))
             if (response.status == 401) {
@@ -30,6 +31,7 @@ let BuscarViajeComponent = ( )=>{
                 setViajes(jsonData)
             }
         }else{
+            console.log(nombre)
             let response = await fetch(backendUrl + "/viajes/filtrar?localizacion="+nombre+
                 "&apiKey=" + localStorage.getItem("apiKey"))
             if (response.status == 401) {
@@ -51,7 +53,7 @@ let BuscarViajeComponent = ( )=>{
                 <form>
                     <FormField id="nombre" label="Ubicación" placeholder="Paris, Roma ..." value={nombre} onChange={(e) => setNombre(e.currentTarget.value)} />
                     <div className='d-flex justify-content-between mt-3'> 
-                        <button class='btn btn-sm btn-primary' type='submit' onClick={buscarViaje}>Buscar</button>
+                        <button class='btn btn-sm btn-primary' type='submit' onClick={e=>buscarViaje(e)}>Buscar</button>
                     </div>
                 </form>
             </div>

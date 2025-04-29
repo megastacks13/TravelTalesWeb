@@ -119,30 +119,45 @@ routerViajes.post("/anadir", async (req, res) => {
     }
 });
 
-routerViajes.get("/viajes/filtrar", async (req, res) => {
-  const { localizacion, id } = req.query;
-  const email = req.infoApiKey?.email;
-
-  if (!localizacion) {
-    return res.status(400).json({ error: 'Falta la ubicación' });
-  }
-
-  try {
-    const snap = await viajesRef
-      .orderByChild('ubicacion')
-      .equalTo(localizacion)
-      .once('value');
-      
-      console.log("Resultado bruto de Firebase:", snap.val());
-
-    const resultados = snap.exists() ? snap.val() : {};
-
-    return res.json(resultados);
-  } catch (e) {
-    console.error('Error buscando viajes:', e);
-    return res.status(500).json({ error: 'Error interno al buscar viajes' });
-  }
-});
+routerViajes.get("/filtrar", async (req, res) => {
+    const { localizacion } = req.query;
+    const email = req.infoApiKey?.email;
+  
+    if (!email) {
+      return res.status(401).json({ error: 'No se ha recibido el correo del usuario' });
+    }
+  
+    if (!localizacion) {
+      return res.status(400).json({ error: 'Falta la ubicación' });
+    }
+  
+    try {
+      const snap = await viajesRef.orderByChild('email').equalTo(email).once('value');
+  
+      if (!snap.exists()) {
+        return res.json({}); 
+      }
+  
+      const viajes = snap.val();
+  
+      const localizacionLower = localizacion.toLowerCase();
+      const filtrados = Object.entries(viajes)
+        .filter(([_, viaje]) =>
+          viaje.ubicacion &&
+          viaje.ubicacion.toLowerCase().includes(localizacionLower)
+        )
+        .reduce((acc, [key, viaje]) => {
+          acc[key] = viaje;
+          return acc;
+        }, {});
+  
+      return res.json(filtrados);
+    } catch (e) {
+      console.error('Error buscando viajes:', e);
+      return res.status(500).json({ error: 'Error interno al buscar viajes' });
+    }
+  });
+  
 
 //Ruta GET para obtener un viaje específico por su ID
 routerViajes.get("/:id",async(req,res)=>{
