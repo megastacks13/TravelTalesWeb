@@ -85,11 +85,11 @@ routerViajes.post("/anadir", async (req, res) => {
         errors.push("El número de personas debe ser un número entero mayor o igual a 1")
     }
 
-    const ubicacionRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü][A-Za-z0-9ÁÉÍÓÚáéíóúÑñÜü\s.,/-]{2,}$/
+    const ubicacionRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü][A-Za-z0-9ÁÉÍÓÚáéíóúÑñÜü\s.,/-]{1,}$/
 
     //Validación de la correcta ubicación (debe seguir el patrón mencionado)
     if (ubicacion && !ubicacionRegex.test(ubicacion))
-        errors.push("La ubicación debe comenzar con una letra, tener al menos 3 caracteres y solo contener letras, números y caracteres especiales (.,/ -).")
+        errors.push("La ubicación debe comenzar con una letra, formarse al menos 2 caracteres y solo puede contener letras y caracteres especiales (.,/ -).")
 
     // Enviamos los errores
     if (errors.length > 0) return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, errors)

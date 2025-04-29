@@ -33,10 +33,9 @@ let ViajesComponent = ( props)=>{
     }
 
     let addTravel = async(event) => {
+        setMensaje("");
         event.preventDefault();
-        if (Object.keys(error).length > 0) {
-            createNotification("No debe haber errores para poder añadir un viaje")
-        } else {
+        if (Object.keys(error).length == 0) {
             let response = await fetch(backendUrl+"/viajes/anadir?apiKey="+localStorage.getItem("apiKey"), 
             {method: "POST",
                 headers: {"Content-Type":"application/json"},
