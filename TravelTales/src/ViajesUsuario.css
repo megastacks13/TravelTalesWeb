@@ -25,3 +25,27 @@
   transform: scale(1.05);
   box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
 }
+
+.alert{
+  position: fixed;
+  bottom: 400px;
+  left: 50%; /* Centers the element horizontally */
+  transform: translateX(-50%); /* Moves it back by 50% of its width */
+  width: 30%;
+  display: flex;
+  align-items: center;
+}
+
+.alert strong{
+  flex-grow: 2;
+}
+
+button.close{
+  width: 10%;
+  flex-grow: 0;
+  background-color: transparent;
+}
+
+.close span {
+  font-size: 24px; /* Adjust the size as needed */
+}

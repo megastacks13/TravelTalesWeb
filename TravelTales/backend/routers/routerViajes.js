@@ -110,14 +110,14 @@ routerViajes.post("/anadir", async (req, res) => {
                     return appErrors.throwError(res, appErrors.UNIQUE_KEY_VIOLATION_ERROR, "Ya has creado un viaje con el mismo nombre")
                 }
             }
-        }
+        }   
 
-        //Si todo es correcto, creamos un nuevo viaje en la base de datos
-        const newViajeRef = viajesRef.push()
-        await newViajeRef.set({ nombre, ubicacion, fechaIni, fechaFin, num, email })
+        let blog=false
+        const newViajeRef = viajesRef.push();
+        await newViajeRef.set({ nombre, ubicacion, fechaIni, fechaFin, num, email, blog });
 
         //Devolvemos el viaje que acabamos de añadir con su ID generado automáticamente
-        res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, email } })
+        res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, email, blog } });
     } catch {
         //Devolvemos el error adecuado si hubo algún problema al insertar el viaje
         return appErrors.throwError(res, appErrors.UNIQUE_KEY_VIOLATION_ERROR, "Ha habido un error insertando el viaje")
@@ -163,7 +163,7 @@ routerViajes.get("/",async(req,res)=>{
         return res.json(viajes);
     } catch (error) {
         console.error("Error al obtener el viaje:", error);
-        return appErrors.throwError(res, appErrors.INTERNAL_SERVER_ERROR)
+        return res.status(500).json({ error: "Error interno del servidor" });
     }
 })
 
