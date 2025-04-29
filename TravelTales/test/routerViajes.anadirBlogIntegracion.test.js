@@ -90,14 +90,18 @@ describe('POST /viajes/:id/anadirBlog', () => {
     viajeId = viaje.body.viajeAnadido.id;
 
     const response = await request(app)
-        .post('/viajes/fakeId123/anadirBlog?apiKey='+apiKey)
+        .post('/viajes/fakeId123/anadirBlog?apiKey=' + apiKey)
         .send({});
-
+      
+        await usersRef.child(userKey).remove();
+        await viajesRef.child(viajeId).remove();  
+      console.log('response Status', response.status);
+      console.log('response body code', response.body.code)  
       expect(response.status).toBe(appErrors.DATA_NOT_FOUND_ERROR.httpStatus);
       expect(response.body.code).toBe(appErrors.DATA_NOT_FOUND_ERROR.code);
 
-    await usersRef.child(userKey).remove();
-    await viajesRef.child(viajeId).remove();
+      
+    
   });
 
 });

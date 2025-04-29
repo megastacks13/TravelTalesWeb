@@ -236,17 +236,17 @@ routerViajes.post('/:id/anadirPlanificacion', async (req, res) => {
  */
 
 routerViajes.post('/:id/anadirBlog', async (req, res) => {
-  const id = req.params.id
-  if (!id) return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, errors);
+  const idViaje = req.params.id
+  if (!idViaje) return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR);
 
   try {
-    const snap = await viajesRef.child(id).once('value')
-    if (!snap.exists()) return appErrors.throwError(res, appErrors.DATA_NOT_FOUND_ERROR, errors)
+    const snap = await viajesRef.child(idViaje).once('value')
+    if (!snap.exists()) return appErrors.throwError(res, appErrors.DATA_NOT_FOUND_ERROR)
 
-    const resultado = await activarBlog(id, viajesRef)
+    const resultado = await activarBlog(idViaje, viajesRef)
     return res.json(resultado)
   } catch (e) {
-    return appErrors.throwError(res, appErrors.INTERNAL_SERVER_ERROR, error)
+    return appErrors.throwError(res, appErrors.INTERNAL_SERVER_ERROR, e)
   }
 })
 
