@@ -41,16 +41,15 @@ routerUsers.post("/login", async (req, res) => {
 
     try {
         const snapshot = await usersRef.orderByChild("email").equalTo(email).once("value");
-
+        
         if (!snapshot.exists()) return appErrors.throwError(res, appErrors.DATA_NOT_FOUND_ERROR, "Correo no registrado")
-
+        
         let user = null;
         snapshot.forEach(childSnapshot => {
             if (childSnapshot.val().contrasena === contrasena) {
                 user = { id: childSnapshot.key, ...childSnapshot.val() };
             }
         });
-        
         if (!user) return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, "Contraseña incorrecta")
 
         const apiKey = jwt.sign({ email: user.email, id: user.id, time: Date.now() }, "secret");
