@@ -54,7 +54,7 @@ let BuscarViajeComponent = ( )=>{
                     <FormField id="nombre" label="Ubicación" placeholder="Paris, Roma ..." value={nombre} onChange={(e) => setNombre(e.currentTarget.value)} />
 
                     <div className='d-flex justify-content-between mt-3'> 
-                        <button class='btn btn-sm btn-primary' onClick={buscarViaje}>Buscar</button>
+                        <button class='btn btn-sm btn-primary' type='submit' onClick={buscarViaje}>Buscar</button>
                     </div>
                 </form>
             </div>
