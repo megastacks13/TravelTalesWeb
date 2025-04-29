@@ -179,56 +179,55 @@ routerViajes.post("/:id/anadirBlog", async (req, res) => {
 });
 
 routerViajes.post("/:id/anadirEntrada", async (req, res) => {
-    const idViaje = req.params.id;
+    const idViaje = req.params.id
     let fecha = req.body.fecha
     let contenido = req.body.contenido
-    let errors = [];
+
+    let errors = []
     if (!db) errors.push('Database error')
     if (!idViaje) errors.push("No se ha recibido un id de viaje")
     if(!fecha) errors.push("No se ha recibido una fecha")
-    if(!contenido) errors.push("No se ha recibido contenido");
+    if(!contenido) errors.push("No se ha recibido contenido")
     
-    const fechaRegex =/^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
+    const fechaRegex =/^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/
 
     if (fecha && !fechaRegex.test(fecha)) errors.push("La fecha no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.")
  
 
-        if (errors.length > 0) return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, errors);
+    if (errors.length > 0) return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, errors)
 
     try {
-        const snapshot = await viajesRef.child(idViaje).once("value");
+        const snapshot = await viajesRef.child(idViaje).once("value")
     
         if (!snapshot.exists()) {
             return appErrors.throwError(res, appErrors.DATA_NOT_FOUND_ERROR, errors)
         }
 
-        let viaje = snapshot.val();
-        const fechaIni = parseFecha(viaje.fechaIni);
-        const fechaFin = parseFecha(viaje.fechaFin);
+        let viaje = snapshot.val()
+        const fechaIni = parseFecha(viaje.fechaIni)
+        const fechaFin = parseFecha(viaje.fechaFin)
         let fechaDate = parseFecha(fecha)
 
-        if (fechaDate < fechaIni || fechaDate > fechaFin) {
+        if (fechaDate < fechaIni || fechaDate > fechaFin)
             return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, errors)
-        }
 
-        const newEntradaRef = entradasRef.push();
-        await newEntradaRef.set({ fecha,contenido });
+        const newEntradaRef = entradasRef.push()
+        await newEntradaRef.set({ fecha,contenido })
 
-        const nuevaEntradaId = newEntradaRef.key;
+        const nuevaEntradaId = newEntradaRef.key
 
-        const viajeSnapshot = await viajesRef.child(idViaje).once("value");
-        viaje = viajeSnapshot.val();
-        let blogActual = viaje.blog;
+        const viajeSnapshot = await viajesRef.child(idViaje).once("value")
 
-        if (blogActual === true || !Array.isArray(blogActual)) {
-            blogActual = [nuevaEntradaId];
-        } else {
-            blogActual.push(nuevaEntradaId);
-        }
+        viaje = viajeSnapshot.val()
 
-        await viajesRef.child(idViaje).update({ blog: blogActual });
+        let blogActual = viaje.blog
 
-        res.json({ mensaje: "Se ha añadido la entrada.", idEntrada: nuevaEntradaId });
+        if (blogActual === true || !Array.isArray(blogActual)) blogActual = [nuevaEntradaId]
+        else blogActual.push(nuevaEntradaId)
+
+        await viajesRef.child(idViaje).update({ blog: blogActual })
+
+        res.json({ mensaje: "Se ha añadido la entrada.", idEntrada: nuevaEntradaId })
 
     
     } catch (error) {
