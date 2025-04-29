@@ -241,17 +241,16 @@ routerViajes.post('/:id/anadirPlanificacion', async (req, res) => {
 
 routerViajes.post('/:id/anadirBlog', async (req, res) => {
   const id = req.params.id
-  if (!id) return res.status(400).json({ error: 'Falta id de viaje' })
+  if (!id) return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, errors);
 
   try {
     const snap = await viajesRef.child(id).once('value')
-    if (!snap.exists()) return res.status(404).json({ error: 'Viaje no encontrado' })
+    if (!snap.exists()) return appErrors.throwError(res, appErrors.DATA_NOT_FOUND_ERROR, errors)
 
     const resultado = await activarBlog(id, viajesRef)
     return res.json(resultado)
   } catch (e) {
-    console.error('Error al crear blog:', e)
-    return res.status(500).json({ error: 'Error interno al crear blog', detalle: e.message })
+    return appErrors.throwError(res, appErrors.INTERNAL_SERVER_ERROR, error)
   }
 })
 
