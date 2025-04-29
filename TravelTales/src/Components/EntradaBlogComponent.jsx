@@ -51,7 +51,7 @@ let EntradaBlogComponent = ( props)=>{
                 }) 
             })
             if(response.ok){
-                navigate("/viajes/"+id)
+                navigate("/viajes/"+id+"?apiKey="+localStorage.getItem("apiKey"))
                 createNotification("Añadida entrada de blog con texto con éxito.")
             }else{
                 let jsonData = await response.json()
