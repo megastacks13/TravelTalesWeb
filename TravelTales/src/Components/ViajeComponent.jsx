@@ -61,6 +61,10 @@ let ViajeComponent = ()=>{
         }
     }
 
+    let anadirEntrada = () => {
+        navigate("/viajes/"+id+"/anadirEntrada")
+    }
+
     return (
         <div>
             {message&& 
@@ -91,8 +95,8 @@ let ViajeComponent = ()=>{
                             </div>
                         </div>
                         <div class="mt-3">
-                            {!viaje.blog && <button onClick={anadirBlog}>Añadir Blog</button>}
-                            {viaje.blog && <div class="texto-informativo">Ya tiene blog</div>}
+                            {!viaje.blog && <button onClick={anadirBlog}>Anadir Blog</button>}
+                            {viaje.blog && <button onClick={anadirEntrada}>Anadir Entrada</button>}
                         </div>
                     </div>
                 </div>

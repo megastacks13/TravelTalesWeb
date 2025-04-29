@@ -1,7 +1,7 @@
 import express from 'express'
 let routerViajes = express.Router()
 import database from "../database.js";
-const { db, usersRef, viajesRef } = database;
+const { db, usersRef, viajesRef, entradasRef } = database;
 import jwt from 'jsonwebtoken'
 import activeApiKeys from '../activeApiKeys.js'
 import appErrors from '../errors.js';
@@ -54,19 +54,6 @@ routerViajes.post("/anadir", async (req, res) => {
     //Comprobamos la validez de las fechas de inicio y fin
     if (fechaIni && !fechaRegex.test(fechaIni)) errors.push("La fecha de inicio no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.")
     if (fechaFin && !fechaRegex.test(fechaFin)) errors.push("La fecha de finalización no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.")
-    
-
-    const parseFecha = (fecha) => {
-        const [año, mes, dia] = fecha.split('-').map(Number)
-        
-        const fechaDate = new Date(año, mes - 1, dia)
-
-        if (fechaDate.getFullYear() !== año || fechaDate.getMonth() !== mes - 1 || fechaDate.getDate() !== dia) {
-            throw new Error("La fecha no es válida, el día no corresponde al mes.")
-        }
-
-        return fechaDate;
-    };
 
     //Validación de que la fecha de fin es posterior a la de inicio
     try {
@@ -117,7 +104,7 @@ routerViajes.post("/anadir", async (req, res) => {
         await newViajeRef.set({ nombre, ubicacion, fechaIni, fechaFin, num, email, blog });
 
         //Devolvemos el viaje que acabamos de añadir con su ID generado automáticamente
-        res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, email, blog } });
+        res.json({ viajeAnadido: { id: newViajeRef.key, nombre, ubicacion, fechaIni, fechaFin, num, email, blog } })
     } catch {
         //Devolvemos el error adecuado si hubo algún problema al insertar el viaje
         return appErrors.throwError(res, appErrors.UNIQUE_KEY_VIOLATION_ERROR, "Ha habido un error insertando el viaje")
@@ -181,6 +168,92 @@ routerViajes.post('/:id/anadirBlog', async (req, res) => {
     } catch (e) {
       return appErrors.throwError(res, appErrors.INTERNAL_SERVER_ERROR, e)
     }
-  })
+});
+
+routerViajes.post("/:id/anadirEntrada", async (req, res) => {
+    const idViaje = req.params.id
+    let titulo = req.body.titulo
+    let fecha = req.body.fecha
+    let contenido = req.body.contenido
+
+    let errors = []
+    if (!db) errors.push('Database error')
+    if (!idViaje) errors.push("No se ha recibido un id de viaje")
+    if(!fecha) errors.push("No se ha recibido una fecha")
+    if(!contenido) errors.push("No se ha recibido contenido")
+    if(!titulo) errors.push("No se ha recibido un título")
+    
+    const fechaRegex =/^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/
+
+    if (fecha && !fechaRegex.test(fecha)) errors.push("La fecha no tiene un formato válido (yyyy-mm-dd) o contiene valores incorrectos.")
+ 
+
+    if (errors.length > 0) return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, errors)
+
+    try {
+        const snapshot = await viajesRef.child(idViaje).once("value")
+    
+        if (!snapshot.exists()) {
+            return appErrors.throwError(res, appErrors.DATA_NOT_FOUND_ERROR, errors)
+        }
+
+        let viaje = snapshot.val()
+        const fechaIni = parseFecha(viaje.fechaIni)
+        const fechaFin = parseFecha(viaje.fechaFin)
+        let fechaDate = parseFecha(fecha)
+
+        if (fechaDate < fechaIni || fechaDate > fechaFin)
+            return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, errors)
+
+        if (Array.isArray(viaje.blog)) {
+            const entradasPromises = viaje.blog.map(id => entradasRef.child(id).once("value"));
+            const entradasSnapshots = await Promise.all(entradasPromises);
+
+            const tituloDuplicado = entradasSnapshots.some(snapshot => {
+                const entrada = snapshot.val();
+                return entrada && entrada.titulo === titulo;
+            });
+
+            if (tituloDuplicado) {
+                return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, ["Ya existe una entrada con ese título para este viaje"]);
+            }
+        }
+
+        const newEntradaRef = entradasRef.push()
+        await newEntradaRef.set({ titulo,fecha,contenido })
+
+        const nuevaEntradaId = newEntradaRef.key
+
+        const viajeSnapshot = await viajesRef.child(idViaje).once("value")
+
+        viaje = viajeSnapshot.val()
+
+        let blogActual = viaje.blog
+
+        if (blogActual === true || !Array.isArray(blogActual)) blogActual = [nuevaEntradaId]
+        else blogActual.push(nuevaEntradaId)
+
+        await viajesRef.child(idViaje).update({ blog: blogActual })
+
+        res.json({ mensaje: "Se ha añadido la entrada.", idEntrada: nuevaEntradaId })
+
+    
+    } catch (error) {
+        return appErrors.throwError(res, appErrors.INTERNAL_SERVER_ERROR, error)
+    }
+});
+
+const parseFecha = (fecha) => {
+    const [año, mes, dia] = fecha.split('-').map(Number)
+    
+    const fechaDate = new Date(año, mes - 1, dia)
+
+    if (fechaDate.getFullYear() !== año || fechaDate.getMonth() !== mes - 1 || fechaDate.getDate() !== dia) {
+        throw new Error("La fecha no es válida, el día no corresponde al mes.")
+    }
+
+    return fechaDate;
+};
 
 export default routerViajes
+
