@@ -53,14 +53,8 @@ let ViajesComponent = ( props)=>{
                 createNotification("Añadido nuevo viaje con datos básicos con éxito.")
             }else{
                 let jsonData = await response.json()
-                let errores=""
-                if(jsonData.error!=null){
-                    jsonData.error.forEach(e => {
-                        errores+=e+", "
-                    });
-                    setMensaje(errores)
-                }else
-                    setMensaje(jsonData.error)
+                console.log(jsonData)
+                setMensaje(jsonData.error)
                 
             }
         }
