@@ -59,7 +59,6 @@ let EntradaBlogComponent = ( props)=>{
                 setMensaje(jsonData.error)
                 
             }
-            window.location.reload()
         }
     }
 

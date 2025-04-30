@@ -163,7 +163,7 @@ routerViajes.post('/:id/anadirBlog', async (req, res) => {
       if (!snap.exists()) return appErrors.throwError(res, appErrors.DATA_NOT_FOUND_ERROR)
   
       await viajesRef.child(idViaje).update({ blog: true });
-      res.json({ mensaje: "Se ha creado el blog del viaje." });
+      res.json({ mensaje: "Se ha creado el blog del viaje." }).redirect('/');
   
     } catch (e) {
       return appErrors.throwError(res, appErrors.INTERNAL_SERVER_ERROR, e)
