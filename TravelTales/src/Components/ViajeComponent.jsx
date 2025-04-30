@@ -95,7 +95,10 @@ let ViajeComponent = ()=>{
                             </div>
                         </div>
                         <div class="mt-3">
-                            {!viaje.blog && <button onClick={anadirBlog}>Anadir Blog</button>}
+                            {!viaje.blog && <button onClick={()=>{
+                                anadirBlog()
+                                window.location.reload()
+                            }}>Anadir Blog</button>}
                             {viaje.blog && <button onClick={anadirEntrada}>Anadir Entrada</button>}
                         </div>
                     </div>

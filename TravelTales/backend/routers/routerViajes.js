@@ -172,7 +172,7 @@ routerViajes.post('/:id/anadirBlog', async (req, res) => {
 
 routerViajes.post("/:id/anadirEntrada", async (req, res) => {
     const idViaje = req.params.id
-    let titulo = req.body.titulo
+    let titulo = "tit"
     let fecha = req.body.fecha
     let contenido = req.body.contenido
 

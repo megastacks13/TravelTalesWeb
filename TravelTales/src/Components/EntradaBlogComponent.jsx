@@ -70,12 +70,6 @@ let EntradaBlogComponent = ( props)=>{
             <h3 class="errorMessage">{mensaje}</h3>
             <form>
                 <FormField 
-                    id="titulo" 
-                    label="TITULO" 
-                    placeholder="Titulo" 
-                    value={titulo} onChange={(e) => setTitulo(e.currentTarget.value)} 
-                    errors={error.titulo ? [error.titulo] : []} />
-                <FormField 
                     id="fecha" 
                     label="FECHA" 
                     type="date" 
