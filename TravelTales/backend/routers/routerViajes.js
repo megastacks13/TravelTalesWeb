@@ -163,7 +163,7 @@ routerViajes.post('/:id/anadirBlog', async (req, res) => {
       if (!snap.exists()) return appErrors.throwError(res, appErrors.DATA_NOT_FOUND_ERROR)
   
       await viajesRef.child(idViaje).update({ blog: true });
-      res.json({ mensaje: "Se ha creado el blog del viaje." }).redirect('/');
+      res.json({ mensaje: "Se ha creado el blog del viaje." });
   
     } catch (e) {
       return appErrors.throwError(res, appErrors.INTERNAL_SERVER_ERROR, e)
@@ -172,7 +172,6 @@ routerViajes.post('/:id/anadirBlog', async (req, res) => {
 
 routerViajes.post("/:id/anadirEntrada", async (req, res) => {
     const idViaje = req.params.id
-    let titulo = "tit"
     let fecha = req.body.fecha
     let contenido = req.body.contenido
 
@@ -181,7 +180,6 @@ routerViajes.post("/:id/anadirEntrada", async (req, res) => {
     if (!idViaje) errors.push("No se ha recibido un id de viaje")
     if(!fecha) errors.push("No se ha recibido una fecha")
     if(!contenido) errors.push("No se ha recibido contenido")
-    if(!titulo) errors.push("No se ha recibido un título")
     
     const fechaRegex =/^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/
 
@@ -205,22 +203,8 @@ routerViajes.post("/:id/anadirEntrada", async (req, res) => {
         if (fechaDate < fechaIni || fechaDate > fechaFin)
             return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, errors)
 
-        if (Array.isArray(viaje.blog)) {
-            const entradasPromises = viaje.blog.map(id => entradasRef.child(id).once("value"));
-            const entradasSnapshots = await Promise.all(entradasPromises);
-
-            const tituloDuplicado = entradasSnapshots.some(snapshot => {
-                const entrada = snapshot.val();
-                return entrada && entrada.titulo === titulo;
-            });
-
-            if (tituloDuplicado) {
-                return appErrors.throwError(res, appErrors.INVALID_ARGUMENT_ERROR, ["Ya existe una entrada con ese título para este viaje"]);
-            }
-        }
-
         const newEntradaRef = entradasRef.push()
-        await newEntradaRef.set({ titulo,fecha,contenido })
+        await newEntradaRef.set({ fecha,contenido })
 
         const nuevaEntradaId = newEntradaRef.key
 

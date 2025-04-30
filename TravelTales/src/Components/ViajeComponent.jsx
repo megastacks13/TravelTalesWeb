@@ -46,7 +46,7 @@ let ViajeComponent = ()=>{
             {method: "POST"})
 
         if(response.ok) {
-            navigate("/viajes/"+id)
+            navigate("/viajes/buscar")
         }
         else {
             let jsonData = await response.json()
