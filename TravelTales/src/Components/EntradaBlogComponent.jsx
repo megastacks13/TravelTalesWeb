@@ -55,6 +55,7 @@ let EntradaBlogComponent = ( props)=>{
                 createNotification("Añadida entrada de blog con texto con éxito.")
             }else{
                 let jsonData = await response.json()
+                createNotification("La fecha es incorrecta")
                 setMensaje(jsonData.error)
                 
             }
